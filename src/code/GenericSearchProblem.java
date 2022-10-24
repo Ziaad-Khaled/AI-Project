@@ -7,7 +7,7 @@ public abstract class GenericSearchProblem {
     
 
     public static String solveBreadthFirstSearch(Grid grid, Boolean visualize) {
-        String solution = "";
+        String solution = new String();
         return solution;
     }
 
