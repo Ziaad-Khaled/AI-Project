@@ -1,21 +1,30 @@
 package code;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
 public class Grid {
 
     private int width;//M
     private int height;//N
     private int passengersMax; //C
-    private Point2D[] station;
+    private ArrayList<Coordinates> stationsCoordinatesList;
+    Coordinates cgCoordinates;
     private State [] states;
     private State currentState;
+    ArrayList<Ship> ships;
+    private Coordinates [] grid;
 
 
 
-    public Grid()
+    public Grid(int m, int n, int C, Coordinates cgCoordinates ,ArrayList<Coordinates> stationsCoordinatesList, ArrayList<Ship> ships)
     {
-        //generate a random grid
+        width = m; height= n;
+        passengersMax = C;
+        this.stationsCoordinatesList = stationsCoordinatesList;
+        this.ships = ships;
+        this.cgCoordinates = cgCoordinates;
+        
     }
 
     public Point2D getCoastGuard() {

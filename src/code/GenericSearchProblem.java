@@ -10,7 +10,7 @@ public abstract class GenericSearchProblem {
     Tree<State> stateSpace;
 
     public static String solveBreadthFirstSearch(Grid grid, Boolean visualize) {
-        String solution = "";
+        String solution = new String();
         return solution;
     }
 
