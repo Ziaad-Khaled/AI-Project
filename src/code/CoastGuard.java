@@ -14,7 +14,35 @@ public class CoastGuard extends GenericSearchProblem {
     public static String solve(String grid, String strategy, Boolean visualize) {
 
         //create the grid
-        //splitting the grid string by semicolons
+
+        Grid gridObject = createGridFromString(grid);
+        String solution;
+        switch(strategy)
+        {
+            case "BF":
+                solution = solveBreadthFirstSearch(gridObject, visualize);
+                break;
+            case "DF":
+                solution = solveDepthFirstSearch(gridObject, visualize);
+                break;
+            case "ID":
+                solution = solveIterativeDeepeningSearch(gridObject, visualize);
+                break;
+            case "GR":
+                solution = solveGreedySearch(gridObject, visualize);
+                break;
+            case "AS":
+                solution = solveAStarSearch(gridObject, visualize);
+                break;
+            default:
+                solution = "";
+        }
+        return solution;
+    }
+    
+    public static Grid createGridFromString(String grid)
+    {
+    	//splitting the grid string by semicolons
         String[] convertedGridArray = grid.split(";");
         //first semicolon has the grid dimensions
         String[] gridDimensions = convertedGridArray[0].split(",");
@@ -37,45 +65,17 @@ public class CoastGuard extends GenericSearchProblem {
         }
         //fifth semicolon has the coordinates of the ships
         String[] shipsCoordinatesAndPassengersString = convertedGridArray[4].split(",");
-        ArrayList<Coordinates> shipsCoordinatesList = new ArrayList<>();//arraylist that will have all ships coordinates
-        ArrayList<Coordinates> shipsNumberOfPassengersList = new ArrayList<>();
+        ArrayList<Ship> ships = new ArrayList<>();//arraylist that will have all ships
+//        ArrayList<Coordinates> shipsNumberOfPassengersList = new ArrayList<>();
         for(int i=0; i<shipsCoordinatesAndPassengersString.length; i+=3){
             int x = Integer.parseInt(shipsCoordinatesAndPassengersString[i]);
             int y = Integer.parseInt(shipsCoordinatesAndPassengersString[i+1]);
+            Coordinates shipCoordinates = new Coordinates(x, y);
             int numberOfPassengers = Integer.parseInt(shipsCoordinatesAndPassengersString[i+2]);
-            shipsCoordinatesList.add(new Coordinates(x,y));
-//            shipsNumberOfPassengersList.add()
-
+            Ship ship = new Ship(shipCoordinates, numberOfPassengers);
+            ships.add(ship);
         }
-
-
-
-
-
-
-        Grid grid1 = null;
-        String solution;
-        switch(strategy)
-        {
-            case "BF":
-                solution = solveBreadthFirstSearch(grid1, visualize);
-                break;
-            case "DF":
-                solution = solveDepthFirstSearch(grid1, visualize);
-                break;
-            case "ID":
-                solution = solveIterativeDeepeningSearch(grid1, visualize);
-                break;
-            case "GR":
-                solution = solveGreedySearch(grid1, visualize);
-                break;
-            case "AS":
-                solution = solveAStarSearch(grid1, visualize);
-                break;
-            default:
-                solution = "";
-        }
-        return solution;
+        return new Grid(m,n,C,cgCoordinates,stationCoordinatesList, ships);
     }
 
 
