@@ -108,38 +108,37 @@ public class Grid {
 
 	   // random number of stations to be created
 	   int stationsNumber=rand.nextInt(width*height);
-	   ArrayList<Coordinates> stationsCoordinatesList=new ArrayList<Coordinates>();
-
+	   Set<Coordinates> stationsCoordinatesSet=new HashSet<>();
 	   for(int i=0;i<stationsNumber;i++)
 	   {
-		   stationsCoordinatesList.add(new Coordinates(rand.nextInt(height),rand.nextInt(width)));
+		   stationsCoordinatesSet.add(new Coordinates(rand.nextInt(height),rand.nextInt(width)));
 	   }
 
 
 	   Coordinates cgCoordinates=new Coordinates(rand.nextInt(height),rand.nextInt(width));
       //generate number of ships which cannot exceed my grid size and has upper limit of grid size minus stations
-	   int shipsNumber=rand.nextInt(width*height-stationsNumber);
+	   int shipsNumber=rand.nextInt(width*height-stationsCoordinatesSet.size());
 	   int shipPassengers;
-	   ArrayList<Ship> ships=new ArrayList<Ship>();
-	   int x;
+	   Set<Ship> ships=new HashSet<>();
+       int x;
 	   int y;
 	   for(int i=0;i<shipsNumber;i++)
 	   {   shipPassengers=rand.nextInt();
 		   x=rand.nextInt(height);
 		   y=rand.nextInt(width);
-		   for(int j=0;i<stationsCoordinatesList.size();j++)
+		   while (stationsCoordinatesSet.contains(new Coordinates(x,y)))
 		   {
-			   if (x==stationsCoordinatesList.get(j).getX() && y==stationsCoordinatesList.get(j).getY() )
-			   { //station has same coordinated as ship so generate new coordinate and start checking again
-				   x=rand.nextInt(height);
-				   y=rand.nextInt(width);
-				   j=0;
-			   }
+			   x=rand.nextInt(height);
+			   y=rand.nextInt(width);
 		   }
 		   ships.add(new Ship(new Coordinates(x,y) ,shipPassengers));
 	   }
+	   //converting sets to arraylist
+	   ArrayList<Ship> shipss = new ArrayList<>(ships);
+	   ArrayList<Coordinates> stationsCoordinatesList = new ArrayList<>(stationsCoordinatesSet);
 
-      Grid myGrid=new Grid(width,height,passengersMax,cgCoordinates ,stationsCoordinatesList,ships);
+
+	   Grid myGrid=new Grid(width,height,passengersMax,cgCoordinates ,stationsCoordinatesList,shipss);
 	   return myGrid;
 
    }
@@ -153,4 +152,19 @@ public class Grid {
         //if exceeded, return false (did not move)
         return true;
     }
+
+	public static void main(String[] args) {
+		System.out.print("hi");
+		Set<Coordinates> xx=new HashSet<>();
+		xx.add(new Coordinates(1,1));
+		xx.add(new Coordinates(1,1));
+		xx.add(new Coordinates(2,3));
+		ArrayList<Coordinates> arr = new ArrayList<>(xx);
+		for(Coordinates element:arr)
+		{
+		System.out.println(element.getX()+"   "+element.getY());
+		}
+
+
+	}
 }
