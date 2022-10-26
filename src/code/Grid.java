@@ -1,7 +1,7 @@
 package code;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Grid {
 	private int width;//M
@@ -99,7 +99,50 @@ public class Grid {
         this.cgCoordinates = cgCoordinates;
         
     }
+   public static Grid GenGrid()
+   {
+	   Random rand = new Random(); //instance of random class
+	   int width = rand.nextInt();
+	   int height=rand.nextInt();
+	   int passengersMax=rand.nextInt();
 
+	   // random number of stations to be created
+	   int stationsNumber=rand.nextInt(width*height);
+	   ArrayList<Coordinates> stationsCoordinatesList=new ArrayList<Coordinates>();
+
+	   for(int i=0;i<stationsNumber;i++)
+	   {
+		   stationsCoordinatesList.add(new Coordinates(rand.nextInt(height),rand.nextInt(width)));
+	   }
+
+
+	   Coordinates cgCoordinates=new Coordinates(rand.nextInt(height),rand.nextInt(width));
+      //generate number of ships which cannot exceed my grid size and has upper limit of grid size minus stations
+	   int shipsNumber=rand.nextInt(width*height-stationsNumber);
+	   int shipPassengers;
+	   ArrayList<Ship> ships=new ArrayList<Ship>();
+	   int x;
+	   int y;
+	   for(int i=0;i<shipsNumber;i++)
+	   {   shipPassengers=rand.nextInt();
+		   x=rand.nextInt(height);
+		   y=rand.nextInt(width);
+		   for(int j=0;i<stationsCoordinatesList.size();j++)
+		   {
+			   if (x==stationsCoordinatesList.get(j).getX() && y==stationsCoordinatesList.get(j).getY() )
+			   { //station has same coordinated as ship so generate new coordinate and start checking again
+				   x=rand.nextInt(height);
+				   y=rand.nextInt(width);
+				   j=0;
+			   }
+		   }
+		   ships.add(new Ship(new Coordinates(x,y) ,shipPassengers));
+	   }
+
+      Grid myGrid=new Grid(width,height,passengersMax,cgCoordinates ,stationsCoordinatesList,ships);
+	   return myGrid;
+
+   }
     public Point2D getCoastGuard() {
         return currentState.getCoastGuard();
     }
