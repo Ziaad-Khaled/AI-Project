@@ -9,10 +9,11 @@ public class Grid {
     private int passengersMax; //C
     private ArrayList<Coordinates> stationsCoordinatesList;
     Coordinates cgCoordinates;
-    private State [] states;
-    private State currentState;
-    ArrayList<Ship> ships;
-    private Coordinates [] grid;
+
+	private HashMap<Coordinates,Integer> passengersInCoordinates;
+	private HashMap<Coordinates,Integer> blackBoxCounterInCoordinates;
+
+	private Coordinates [] grid;
 
 
 
@@ -56,30 +57,6 @@ public class Grid {
 		this.cgCoordinates = cgCoordinates;
 	}
 
-	public State[] getStates() {
-		return states;
-	}
-
-	public void setStates(State[] states) {
-		this.states = states;
-	}
-
-	public State getCurrentState() {
-		return currentState;
-	}
-
-	public void setCurrentState(State currentState) {
-		this.currentState = currentState;
-	}
-
-	public ArrayList<Ship> getShips() {
-		return ships;
-	}
-
-	public void setShips(ArrayList<Ship> ships) {
-		this.ships = ships;
-	}
-
 	public Coordinates[] getGrid() {
 		return grid;
 	}
@@ -90,60 +67,20 @@ public class Grid {
 
 
 
-    public Grid(int m, int n, int C, Coordinates cgCoordinates ,ArrayList<Coordinates> stationsCoordinatesList, ArrayList<Ship> ships)
+    public Grid(int m, int n, int C, Coordinates cgCoordinates ,ArrayList<Coordinates> stationsCoordinatesList, HashMap<Coordinates,Integer> passengersInCoordinates,
+				HashMap<Coordinates,Integer> blackBoxCounterInCoordinates)
     {
         width = m; height= n;
         passengersMax = C;
         this.stationsCoordinatesList = stationsCoordinatesList;
-        this.ships = ships;
-        this.cgCoordinates = cgCoordinates;
+        this.passengersInCoordinates = passengersInCoordinates;
+		this.blackBoxCounterInCoordinates = blackBoxCounterInCoordinates;
+		this.cgCoordinates = cgCoordinates;
         
     }
-   public static Grid GenGrid()
-   {
-	   Random rand = new Random(); //instance of random class
-	   int width = rand.nextInt();
-	   int height=rand.nextInt();
-	   int passengersMax=rand.nextInt();
 
-	   // random number of stations to be created
-	   int stationsNumber=rand.nextInt(width*height);
-	   Set<Coordinates> stationsCoordinatesSet=new HashSet<>();
-	   for(int i=0;i<stationsNumber;i++)
-	   {
-		   stationsCoordinatesSet.add(new Coordinates(rand.nextInt(height),rand.nextInt(width)));
-	   }
-
-
-	   Coordinates cgCoordinates=new Coordinates(rand.nextInt(height),rand.nextInt(width));
-      //generate number of ships which cannot exceed my grid size and has upper limit of grid size minus stations
-	   int shipsNumber=rand.nextInt(width*height-stationsCoordinatesSet.size());
-	   int shipPassengers;
-	   Set<Ship> ships=new HashSet<>();
-       int x;
-	   int y;
-	   for(int i=0;i<shipsNumber;i++)
-	   {   shipPassengers=rand.nextInt();
-		   x=rand.nextInt(height);
-		   y=rand.nextInt(width);
-		   while (stationsCoordinatesSet.contains(new Coordinates(x,y)))
-		   {
-			   x=rand.nextInt(height);
-			   y=rand.nextInt(width);
-		   }
-		   ships.add(new Ship(new Coordinates(x,y) ,shipPassengers));
-	   }
-	   //converting sets to arraylist
-	   ArrayList<Ship> shipss = new ArrayList<>(ships);
-	   ArrayList<Coordinates> stationsCoordinatesList = new ArrayList<>(stationsCoordinatesSet);
-
-
-	   Grid myGrid=new Grid(width,height,passengersMax,cgCoordinates ,stationsCoordinatesList,shipss);
-	   return myGrid;
-
-   }
-    public Point2D getCoastGuard() {
-        return currentState.getCoastGuard();
+    public Point2D getCoastGuardLocation() {
+        return cgCoordinates;
     }
 
     public boolean moveCoastGuard(int x, int y) {
