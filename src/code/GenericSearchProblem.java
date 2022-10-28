@@ -6,8 +6,10 @@ import com.sun.source.tree.TreeVisitor;
 public abstract class GenericSearchProblem {
 
     String[] operators;
-    State intialState;
-    Tree<State> stateSpace;
+    State initialState;
+    SearchTreeNode root;
+
+
 
     public static String solveBreadthFirstSearch(Grid grid, Boolean visualize) {
         String solution = new String();
@@ -33,12 +35,11 @@ public abstract class GenericSearchProblem {
         String solution = "";
         return solution;
     }
+    public abstract boolean goalTest(State s);
 
-    public boolean goalTest(){
-        return false;
-    }
+    public abstract int pathCost(SearchTreeNode n);
 
-    public int pathCost(){
-        return 0;
-    }
+
+
+
 }

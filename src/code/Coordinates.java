@@ -5,7 +5,7 @@ import java.awt.geom.Point2D;
 public class Coordinates extends Point2D {
     public double x;
     public double y;
-    public Coordinates(int x, int y){
+    public Coordinates(double x, double y){
         setLocation(x,y);
     }
 	@Override
