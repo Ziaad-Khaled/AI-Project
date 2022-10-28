@@ -1,31 +1,30 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package code;
 
 import java.awt.geom.Point2D;
 
 public class Coordinates extends Point2D {
-    public double x;
-    public double y;
-    public Coordinates(double x, double y){
-        setLocation(x,y);
-    }
-	@Override
+	public double x;
+	public double y;
+
+	public Coordinates(double x, double y) {
+		this.setLocation(x, y);
+	}
+
 	public double getX() {
-		// TODO Auto-generated method stub
-		return x;
+		return this.x;
 	}
-	@Override
+
 	public double getY() {
-		// TODO Auto-generated method stub
-		return y;
+		return this.y;
 	}
-	@Override
+
 	public void setLocation(double x, double y) {
-		this.x=x;
-		this.y=y;
-		
+		this.x = x;
+		this.y = y;
 	}
-	
-
-
-
 }
