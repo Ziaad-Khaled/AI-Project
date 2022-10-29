@@ -175,7 +175,7 @@ public class CoastGuard extends GenericSearchProblem {
 
 
 
-        return false;
+        return cgHasPassengers;
 
     }
     public static boolean canRetrieve(SearchTreeNode parent)
