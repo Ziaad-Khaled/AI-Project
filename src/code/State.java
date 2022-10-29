@@ -14,10 +14,20 @@ public class State{
     private HashMap<Coordinates,Integer> passengersInCoordinates;
     private HashMap<Coordinates,Integer> blackBoxCounterInCoordinates;
 
+    public int getNumberOfPassengersOnCG() {
+        return numberOfPassengersOnCG;
+    }
+
+    public void setNumberOfPassengersOnCG(int numberOfPassengersOnCG) {
+        this.numberOfPassengersOnCG = numberOfPassengersOnCG;
+    }
+
+    private int numberOfPassengersOnCG = 0;
+
     private int pathCost;
 
     public State(Coordinates coastGuardLocation, HashMap<Coordinates,Integer> passengersInCoordinates,
-                 HashMap<Coordinates,Integer> blackBoxCounterInCoordinates, int pathCost){
+                 HashMap<Coordinates,Integer> blackBoxCounterInCoordinates){
         this.coastGuardLocation = coastGuardLocation;
         this.passengersInCoordinates = passengersInCoordinates;
         this.blackBoxCounterInCoordinates = blackBoxCounterInCoordinates;
@@ -26,9 +36,9 @@ public class State{
         return coastGuardLocation;
     }
 
-    public int getNumberOfPassngersInCoordinates (Coordinates c)
+    public HashMap<Coordinates, Integer> getNumberOfPassngersInCoordinates ()
     {
-        return passengersInCoordinates.get(c);
+        return passengersInCoordinates;
     }
     public int getblackBoxCountInCoordinates (Coordinates c)
     {

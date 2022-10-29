@@ -75,23 +75,26 @@ public class CoastGuard extends GenericSearchProblem {
         //create the grid
 
         Grid gridObject = createGridFromString(grid);
+        State initialState = new State(gridObject.getCoastGuardLocation(),gridObject.getPassengersInCoordinates(),
+                gridObject.getBlackBoxCounterInCoordinates());
+        SearchTreeNode root = new SearchTreeNode(null,0,0,initialState);
         String solution;
         switch(strategy)
         {
             case "BF":
-                solution = solveBreadthFirstSearch(gridObject, visualize);
+                solution = solveBreadthFirstSearch(gridObject, visualize, root);
                 break;
             case "DF":
-                solution = solveDepthFirstSearch(gridObject, visualize);
+                solution = solveDepthFirstSearch(gridObject, visualize, root);
                 break;
             case "ID":
-                solution = solveIterativeDeepeningSearch(gridObject, visualize);
+                solution = solveIterativeDeepeningSearch(gridObject, visualize, root);
                 break;
             case "GR":
-                solution = solveGreedySearch(gridObject, visualize);
+                solution = solveGreedySearch(gridObject, visualize, root);
                 break;
             case "AS":
-                solution = solveAStarSearch(gridObject, visualize);
+                solution = solveAStarSearch(gridObject, visualize, root);
                 break;
             default:
                 solution = "";
@@ -138,20 +141,84 @@ public class CoastGuard extends GenericSearchProblem {
         return new Grid(m,n,C,cgCoordinates,stationCoordinatesList, passengersInCoordinates,blackBoxCounterInCoordinates);
     }
 
+    public ArrayList<SearchTreeNode> expandNode(SearchTreeNode parent, Grid grid){
 
-    public void pickUp(){
+        ArrayList<SearchTreeNode> children = new ArrayList<>();
+
+        children.add(pickUp(parent));
+        children.add(drop(parent) );
+        children.add(retrieve(parent));
+        children.add(move('R', parent));
+        children.add(move('L', parent));
+        children.add(move('U', parent));
+        children.add(move('D', parent));
+
+        return null;
+    }
+
+    public static boolean canPickUp(SearchTreeNode parent)
+    {
+        Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
+        HashMap<Coordinates, Integer> passengersInCoordinates = parent.getState().getNumberOfPassngersInCoordinates();
+        if(passengersInCoordinates.containsKey(cgCoordinates))
+            return true;
+        return false;
+    }
+    public static boolean canDrop(SearchTreeNode parent, Grid grid)
+    {
+        //first: check that coast guard has passengers
+        Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
+        int numberOfPassengersOnCG = parent.getState().getNumberOfPassengersOnCG();
+        boolean cgHasPassengers = false;
+        if(numberOfPassengersOnCG>0)
+            cgHasPassengers = true;
+
+
+
+        return false;
+
+    }
+    public static boolean canRetrieve(SearchTreeNode parent)
+    {
+        return false;
+
+    }
+    public static boolean canMoveUp(SearchTreeNode parent)
+    {
+        return false;
+
+    }
+    public static boolean canMoveDown(SearchTreeNode parent)
+    {
+        return false;
+
+    }
+    public static boolean canMoveRight(SearchTreeNode parent)
+    {
+        return false;
+
+    }
+    public static boolean canMoveLeft(SearchTreeNode parent)
+    {
+        return false;
 
     }
 
-    public void drop(){
+    public static SearchTreeNode pickUp(SearchTreeNode parent){
+        return null;
+    }
+
+    public static SearchTreeNode drop(SearchTreeNode parent){
+        return null;
 
     }
 
-    public void retrieve(){
+    public static SearchTreeNode retrieve(SearchTreeNode parent){
+        return null;
 
     }
 
-    public void move(char direction){
+    public static SearchTreeNode move(char direction, SearchTreeNode parent){
         switch (direction){
             case 'R':
                 //move coast guard
@@ -168,6 +235,8 @@ public class CoastGuard extends GenericSearchProblem {
             default:
                 break;
         }
+        return null;
+
     }
 
     @Override
@@ -180,7 +249,7 @@ public class CoastGuard extends GenericSearchProblem {
     @Override
     public int pathCost(SearchTreeNode n) {
         //check the number of killed passengers and the number of expired black boxes since the root node
-        return n.pathCost;
+        return n.getPathCost();
     }
 }
 

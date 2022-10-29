@@ -10,7 +10,24 @@ public class Grid {
     private ArrayList<Coordinates> stationsCoordinatesList;
     Coordinates cgCoordinates;
 
+	public HashMap<Coordinates, Integer> getPassengersInCoordinates() {
+		return passengersInCoordinates;
+	}
+
+	public void setPassengersInCoordinates(HashMap<Coordinates, Integer> passengersInCoordinates) {
+		this.passengersInCoordinates = passengersInCoordinates;
+	}
+
 	private HashMap<Coordinates,Integer> passengersInCoordinates;
+
+	public HashMap<Coordinates, Integer> getBlackBoxCounterInCoordinates() {
+		return blackBoxCounterInCoordinates;
+	}
+
+	public void setBlackBoxCounterInCoordinates(HashMap<Coordinates, Integer> blackBoxCounterInCoordinates) {
+		this.blackBoxCounterInCoordinates = blackBoxCounterInCoordinates;
+	}
+
 	private HashMap<Coordinates,Integer> blackBoxCounterInCoordinates;
 
 	private Coordinates [] grid;
@@ -74,12 +91,12 @@ public class Grid {
         passengersMax = C;
         this.stationsCoordinatesList = stationsCoordinatesList;
         this.passengersInCoordinates = passengersInCoordinates;
-		this.blackBoxCounterInCoordinates = blackBoxCounterInCoordinates;
 		this.cgCoordinates = cgCoordinates;
+		this.blackBoxCounterInCoordinates=blackBoxCounterInCoordinates;
         
     }
 
-    public Point2D getCoastGuardLocation() {
+    public Coordinates getCoastGuardLocation() {
         return cgCoordinates;
     }
 
