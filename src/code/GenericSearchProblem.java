@@ -12,7 +12,7 @@ public abstract class GenericSearchProblem {
     SearchTreeNode root;
     String[] actions;
 
-    public abstract ArrayList<SearchTreeNode> expandNode(SearchTreeNode parent, Grid grid);
+    public abstract  ArrayList<SearchTreeNode> expandNode(SearchTreeNode parent, Grid grid);
 
     public static String solveBreadthFirstSearch(Grid grid, Boolean visualize, SearchTreeNode root) {
         String solution = new String();

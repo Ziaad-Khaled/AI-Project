@@ -7,7 +7,7 @@ public class Grid {
 	private int width;//M
     private int height;//N
     private int passengersMax; //C
-    private ArrayList<Coordinates> stationsCoordinatesList;
+    private HashSet<Coordinates> stationsCoordinatesList;
     Coordinates cgCoordinates;
 
 	public HashMap<Coordinates, Integer> getPassengersInCoordinates() {
@@ -58,11 +58,11 @@ public class Grid {
 		this.passengersMax = passengersMax;
 	}
 
-	public ArrayList<Coordinates> getStationsCoordinatesList() {
+	public HashSet<Coordinates> getStationsCoordinatesList() {
 		return stationsCoordinatesList;
 	}
 
-	public void setStationsCoordinatesList(ArrayList<Coordinates> stationsCoordinatesList) {
+	public void setStationsCoordinatesList(HashSet<Coordinates> stationsCoordinatesList) {
 		this.stationsCoordinatesList = stationsCoordinatesList;
 	}
 
@@ -84,7 +84,7 @@ public class Grid {
 
 
 
-    public Grid(int m, int n, int C, Coordinates cgCoordinates ,ArrayList<Coordinates> stationsCoordinatesList, HashMap<Coordinates,Integer> passengersInCoordinates,
+    public Grid(int m, int n, int C, Coordinates cgCoordinates ,HashSet<Coordinates> stationsCoordinatesList, HashMap<Coordinates,Integer> passengersInCoordinates,
 				HashMap<Coordinates,Integer> blackBoxCounterInCoordinates)
     {
         width = m; height= n;

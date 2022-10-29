@@ -119,7 +119,7 @@ public class CoastGuard extends GenericSearchProblem {
         Coordinates cgCoordinates = new Coordinates(cgX,cgY);
         //fourth semicolon has the coordinates of the stations
         String[] stationsCoordinatesString = convertedGridArray[3].split(",");
-        ArrayList<Coordinates> stationCoordinatesList = new ArrayList<>();//arraylist that will have all station coordinates
+        HashSet<Coordinates> stationCoordinatesList = new HashSet<>();//arraylist that will have all station coordinates
         for(int i=0; i<stationsCoordinatesString.length; i+=2){
             double x = Double.parseDouble(stationsCoordinatesString[i]);
             double y = Double.parseDouble(stationsCoordinatesString[i+1]);
@@ -145,63 +145,85 @@ public class CoastGuard extends GenericSearchProblem {
 
         ArrayList<SearchTreeNode> children = new ArrayList<>();
 
-        children.add(pickUp(parent));
-        children.add(drop(parent) );
-        children.add(retrieve(parent));
-        children.add(move('R', parent));
-        children.add(move('L', parent));
-        children.add(move('U', parent));
-        children.add(move('D', parent));
+        if(canPickUp(parent))
+            children.add(pickUp(parent));
 
-        return null;
+        if(canDrop(parent, grid))
+            children.add(drop(parent));
+
+        if(canRetrieve(parent))
+            children.add(retrieve(parent));
+
+        if(canMoveRight(parent, grid))
+            children.add(move('R', parent));
+
+        if(canMoveLeft(parent))
+            children.add(move('L', parent));
+
+        if(canMoveUp(parent))
+            children.add(move('U', parent));
+
+        if(canMoveDown(parent, grid))
+            children.add(move('D', parent));
+
+        return children;
     }
 
     public static boolean canPickUp(SearchTreeNode parent)
     {
         Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
         HashMap<Coordinates, Integer> passengersInCoordinates = parent.getState().getNumberOfPassngersInCoordinates();
-        if(passengersInCoordinates.containsKey(cgCoordinates))
+        return passengersInCoordinates.containsKey(cgCoordinates);
+    }
+
+    public static boolean canDrop(SearchTreeNode parent, Grid grid)
+    {
+        //First: check that coast guard has passengers
+        Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
+        int numberOfPassengersOnCG = parent.getState().getNumberOfPassengersOnCG();
+
+        if(numberOfPassengersOnCG == 0)
+            return false;
+
+        //Second: check that the coast guard is at a station
+        HashSet<Coordinates> station = grid.getStationsCoordinatesList();
+        return station.contains(cgCoordinates);
+    }
+
+    public static boolean canRetrieve(SearchTreeNode parent)
+    {
+        Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
+        HashMap<Coordinates, Integer> passengersInCoordinates = parent.getState().getNumberOfPassngersInCoordinates();
+
+        if(passengersInCoordinates.containsKey(cgCoordinates) && passengersInCoordinates.get(cgCoordinates) == 0)
             return true;
         return false;
     }
-    public static boolean canDrop(SearchTreeNode parent, Grid grid)
-    {
-        //first: check that coast guard has passengers
-        Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
-        int numberOfPassengersOnCG = parent.getState().getNumberOfPassengersOnCG();
-        boolean cgHasPassengers = false;
-        if(numberOfPassengersOnCG>0)
-            cgHasPassengers = true;
 
-
-
-        return cgHasPassengers;
-
-    }
-    public static boolean canRetrieve(SearchTreeNode parent)
-    {
-        return false;
-
-    }
     public static boolean canMoveUp(SearchTreeNode parent)
     {
-        return false;
-
+        Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
+        return cgCoordinates.getX() != 0;
     }
-    public static boolean canMoveDown(SearchTreeNode parent)
+
+    public static boolean canMoveDown(SearchTreeNode parent, Grid grid)
     {
-        return false;
-
+        int height = grid.getHeight();
+        Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
+        return !(cgCoordinates.getX() >= height);
     }
-    public static boolean canMoveRight(SearchTreeNode parent)
+
+    public static boolean canMoveRight(SearchTreeNode parent, Grid grid)
     {
-        return false;
-
+        int width = grid.getWidth();
+        Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
+        return !(cgCoordinates.getX() >= width);
     }
+
     public static boolean canMoveLeft(SearchTreeNode parent)
     {
-        return false;
-
+        Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
+        return cgCoordinates.getY() != 0;
     }
 
     public static SearchTreeNode pickUp(SearchTreeNode parent){
@@ -218,25 +240,37 @@ public class CoastGuard extends GenericSearchProblem {
 
     }
 
-    public static SearchTreeNode move(char direction, SearchTreeNode parent){
+    public static SearchTreeNode move(char direction, SearchTreeNode parent)
+    {
+        //extract last state data
+        Coordinates cg = parent.getState().getCoastGuardLocation();
+        HashMap<Coordinates, Integer> passengers = parent.getState().getNumberOfPassngersInCoordinates();
+        HashMap<Coordinates, Integer> blackBox = parent.getState().getblackBoxCountInCoordinates();
+
+
+        State newState = new State(cg, passengers, blackBox);
+        newState.preformATimeStep();
+
         switch (direction){
             case 'R':
-                //move coast guard
+                newState.setCoastGuardLocation(new Coordinates(cg.getX(), cg.getY()+1));
                 break;
             case 'L':
-                //move coast guard
+                newState.setCoastGuardLocation(new Coordinates(cg.getX(), cg.getY()-1));
                 break;
             case 'U':
-                //move coast guard
+                newState.setCoastGuardLocation(new Coordinates(cg.getX()-1, cg.getY()));
                 break;
             case 'D':
-                //move coast guard
+                newState.setCoastGuardLocation(new Coordinates(cg.getX()+1, cg.getY()));
                 break;
             default:
                 break;
         }
-        return null;
 
+        SearchTreeNode child = new SearchTreeNode(parent, parent.getDepth() + 1, parent.getPathCost() + 1, newState);
+
+        return child;
     }
 
     @Override

@@ -8,8 +8,8 @@ package code;
 import java.awt.geom.Point2D;
 
 public class Coordinates extends Point2D {
-	public double x;
-	public double y;
+	private double x;
+	private double y;
 
 	public Coordinates(double x, double y) {
 		this.setLocation(x, y);
