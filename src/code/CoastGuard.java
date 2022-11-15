@@ -70,14 +70,13 @@ public class CoastGuard extends GenericSearchProblem {
         return gridString;
     }
 
-    public static String solve(String grid, String strategy, Boolean visualize) {
+    public String solve(String grid, String strategy, Boolean visualize) {
 
         //create the grid
-
         Grid gridObject = createGridFromString(grid);
         State initialState = new State(gridObject.getCoastGuardLocation(),gridObject.getPassengersInCoordinates(),
-                gridObject.getBlackBoxCounterInCoordinates());
-        SearchTreeNode root = new SearchTreeNode(null,0,0,initialState);
+                gridObject.getBlackBoxCounterInCoordinates(),0, 0, 0);
+        SearchTreeNode root = new SearchTreeNode(null,new ArrayList<>(),0,initialState);
         String solution;
         switch(strategy)
         {
@@ -146,7 +145,7 @@ public class CoastGuard extends GenericSearchProblem {
         ArrayList<SearchTreeNode> children = new ArrayList<>();
 
         if(canPickUp(parent))
-            children.add(pickUp(parent));
+            children.add(pickUp(parent,grid));
 
         if(canDrop(parent, grid))
             children.add(drop(parent));
@@ -173,7 +172,9 @@ public class CoastGuard extends GenericSearchProblem {
     {
         Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
         HashMap<Coordinates, Integer> passengersInCoordinates = parent.getState().getNumberOfPassngersInCoordinates();
-        return passengersInCoordinates.containsKey(cgCoordinates);
+
+        //check that the cg location has a ship and the number of passengers on the ship is not zero
+        return passengersInCoordinates.containsKey(cgCoordinates) && passengersInCoordinates.get(cgCoordinates)-1>0;
     }
 
     public static boolean canDrop(SearchTreeNode parent, Grid grid)
@@ -194,8 +195,12 @@ public class CoastGuard extends GenericSearchProblem {
     {
         Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
         HashMap<Coordinates, Integer> passengersInCoordinates = parent.getState().getNumberOfPassngersInCoordinates();
+        HashMap<Coordinates, Integer> blackBoxCounterInCoordinates = parent.getState().getblackBoxCountInCoordinates();
 
-        if(passengersInCoordinates.containsKey(cgCoordinates) && passengersInCoordinates.get(cgCoordinates) == 0)
+
+        //check that the cg is in the same location as a ship, it has no passengers
+        if(passengersInCoordinates.containsKey(cgCoordinates) && passengersInCoordinates.get(cgCoordinates) == 0
+            && blackBoxCounterInCoordinates.get(cgCoordinates)<100)
             return true;
         return false;
     }
@@ -226,63 +231,127 @@ public class CoastGuard extends GenericSearchProblem {
         return cgCoordinates.getY() != 0;
     }
 
-    public static SearchTreeNode pickUp(SearchTreeNode parent){
-        return null;
+    public static SearchTreeNode pickUp(SearchTreeNode parent, Grid grid){
+        //extract last state data
+        Coordinates cgLocation = (Coordinates) parent.getState().getCoastGuardLocation().clone();//clone to avoid altering data of parent
+        HashMap<Coordinates, Integer> passengers = (HashMap<Coordinates, Integer>) parent.getState().getNumberOfPassngersInCoordinates().clone();
+        HashMap<Coordinates, Integer> blackBox = (HashMap<Coordinates, Integer>) parent.getState().getblackBoxCountInCoordinates().clone();
+        int numberOfPassengersOnCG = parent.getState().getNumberOfPassengersOnCG();
+        //the capacity of the cg now is its maximum capacity - the number of passengers that it now has
+        int cgCapacity = grid.getPassengersMax() - numberOfPassengersOnCG;
+
+        //the coordinates of the CG should now be decremented by cgCapacity passengers
+        passengers.put(cgLocation, passengers.get(cgLocation)-cgCapacity);
+
+        State newState = new State(cgLocation, passengers, blackBox, numberOfPassengersOnCG, parent.getState().getDeaths(), parent.getState().getRetrieved());
+
+        //decrement all the passengers who died and increment all the black boxes count if no passengers exist
+        int cost = newState.preformATimeStep();
+        //cost represents the number of passengers who died + number of black boxes which became non-retrievable in this time step
+
+        SearchTreeNode childNode = new SearchTreeNode(parent, parent.getActionsSequence(), parent.getPathCost()+cost , newState);
+        //add this action to the sequence of actions from the root till this node
+        childNode.addAction("pickUp");
+        return childNode;
     }
 
     public static SearchTreeNode drop(SearchTreeNode parent){
-        return null;
+        //extract last state data
+        Coordinates cgLocation = (Coordinates) parent.getState().getCoastGuardLocation().clone();//clone to avoid altering data of parent
+        HashMap<Coordinates, Integer> passengers = (HashMap<Coordinates, Integer>) parent.getState().getNumberOfPassngersInCoordinates().clone();
+        HashMap<Coordinates, Integer> blackBox = (HashMap<Coordinates, Integer>) parent.getState().getblackBoxCountInCoordinates().clone();
 
+        //same state but with number of passengers on CG now equal to zero
+        State newState = new State(cgLocation, passengers, blackBox, 0, parent.getState().getDeaths(), parent.getState().getRetrieved());
+
+        //decrement all the passengers who died and increment all the black boxes count if no passengers exist in their ships
+        int cost = newState.preformATimeStep();
+        //cost represents the number of passengers who died + number of black boxes which became non-retrievable in this time step
+
+        SearchTreeNode childNode = new SearchTreeNode(parent, parent.getActionsSequence(), parent.getPathCost()+cost , newState);
+        //add this action to the sequence of actions from the root till this node
+        childNode.addAction("drop");
+        return childNode;
     }
 
     public static SearchTreeNode retrieve(SearchTreeNode parent){
-        return null;
+        //extract last state data
+        Coordinates cgLocation = (Coordinates) parent.getState().getCoastGuardLocation().clone();//clone to avoid altering data of parent
+        HashMap<Coordinates, Integer> passengers = (HashMap<Coordinates, Integer>) parent.getState().getNumberOfPassngersInCoordinates().clone();
+        HashMap<Coordinates, Integer> blackBox = (HashMap<Coordinates, Integer>) parent.getState().getblackBoxCountInCoordinates().clone();
+        int numberOfPassengersOnCG = parent.getState().getNumberOfPassengersOnCG();
 
+        //remove the ship from the new state
+        passengers.remove(cgLocation);
+        blackBox.remove(cgLocation);
+
+        //same state but with the ship information removed from the state
+        State newState = new State(cgLocation, passengers, blackBox, numberOfPassengersOnCG, parent.getState().getDeaths(), parent.getState().getRetrieved());
+        //decrement all the passengers who died and increment all the black boxes count if no passengers exist in their ships
+        int cost = newState.preformATimeStep();
+        //cost represents the number of passengers who died + number of black boxes which became non-retrievable in this time step
+
+        //increase the number of retrieved boxes till this state
+        newState.setRetrieved(newState.getRetrieved()+1);
+
+        SearchTreeNode childNode = new SearchTreeNode(parent, parent.getActionsSequence(), parent.getPathCost()+cost , newState);
+        //add this action to the sequence of actions from the root till this node
+        childNode.addAction("retrieve");
+        return childNode;
     }
 
     public static SearchTreeNode move(char direction, SearchTreeNode parent)
     {
         //extract last state data
         Coordinates cg = parent.getState().getCoastGuardLocation();
-        HashMap<Coordinates, Integer> passengers = parent.getState().getNumberOfPassngersInCoordinates();
-        HashMap<Coordinates, Integer> blackBox = parent.getState().getblackBoxCountInCoordinates();
+        HashMap<Coordinates, Integer> passengers = (HashMap<Coordinates, Integer>) parent.getState().getNumberOfPassngersInCoordinates().clone();
+        HashMap<Coordinates, Integer> blackBox = (HashMap<Coordinates, Integer>) parent.getState().getblackBoxCountInCoordinates().clone();
+        int numberOfPassengersOnCG = parent.getState().getNumberOfPassengersOnCG();
 
 
-        State newState = new State(cg, passengers, blackBox);
-        newState.preformATimeStep();
+        State newState = new State(cg, passengers, blackBox, numberOfPassengersOnCG, parent.getState().getDeaths(), parent.getState().getRetrieved());
+        int cost = newState.preformATimeStep();
 
+        String action = "move";
         switch (direction){
             case 'R':
                 newState.setCoastGuardLocation(new Coordinates(cg.getX(), cg.getY()+1));
+                action+="Right";
                 break;
             case 'L':
                 newState.setCoastGuardLocation(new Coordinates(cg.getX(), cg.getY()-1));
+                action+="Left";
                 break;
             case 'U':
                 newState.setCoastGuardLocation(new Coordinates(cg.getX()-1, cg.getY()));
+                action+="Up";
                 break;
             case 'D':
                 newState.setCoastGuardLocation(new Coordinates(cg.getX()+1, cg.getY()));
+                action+="Down";
                 break;
             default:
                 break;
         }
 
-        SearchTreeNode child = new SearchTreeNode(parent, parent.getDepth() + 1, parent.getPathCost() + 1, newState);
-
+        SearchTreeNode child = new SearchTreeNode(parent, parent.getActionsSequence(), cost + parent.getPathCost(), newState);
+        //add this action to the sequence of actions from the root till this node
+        child.addAction(action);
         return child;
     }
 
     @Override
     public boolean goalTest(State s) {
-        //check that all the number of passengers in all locations = 0
+        //check that there are no coordinates that have any passengers
         //check that all blackboxes counter reached 1
+        if(s.getPassengersInCoordinates().isEmpty() && s.getblackBoxCountInCoordinates().isEmpty() && s.getNumberOfPassengersOnCG()==0)
+            return true;
         return false;
     }
 
     @Override
     public int pathCost(SearchTreeNode n) {
-        //check the number of killed passengers and the number of expired black boxes since the root node
+        //check the number of killed passengers and the number of expired black b oxes since the root node
         return n.getPathCost();
     }
 }

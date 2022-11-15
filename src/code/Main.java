@@ -1,8 +1,22 @@
 package code;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 public class Main {
     public static void main(String[] args) {
-        Grid grid = CoastGuard.createGridFromString("3,4;97;1,2;0,1;3,2,65;");
+        HashMap<Integer,Integer> hm = new HashMap<>();
+        hm.put(1,1);
+        hm.put(2,2);
+        hm.put(3,3);
+        for(HashMap.Entry<Integer, Integer> set : hm.entrySet())
+        {
+            if(set.getKey()==2)
+                hm.put(2,200);
+            System.out.println(set);
+        }
+        hm.values().removeIf(value -> value==200);
+        System.out.println(hm);
     }
 
     public static class Ship {

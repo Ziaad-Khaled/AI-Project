@@ -4,6 +4,9 @@ package code;
 import com.sun.source.tree.TreeVisitor;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Queue;
 
 public abstract class GenericSearchProblem {
 
@@ -14,9 +17,26 @@ public abstract class GenericSearchProblem {
 
     public abstract  ArrayList<SearchTreeNode> expandNode(SearchTreeNode parent, Grid grid);
 
-    public static String solveBreadthFirstSearch(Grid grid, Boolean visualize, SearchTreeNode root) {
-        String solution = new String();
-        return solution;
+    public String solveBreadthFirstSearch(Grid grid, Boolean visualize, SearchTreeNode root) {
+        int expandedNodes = 0;
+
+        NodesQueue<SearchTreeNode> nodes = new NodesQueue();
+        nodes.add(root);
+        while(true)
+        {
+            if(nodes.isEmpty())
+                return "failure";
+
+            SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
+            expandedNodes++;
+
+            //check if n passes goal test
+            if(goalTest(n.getState()))
+                return "" + n.getActionsSequence() + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
+            ArrayList children = expandNode(n,grid);
+            nodes.addMultiple(children);
+
+        }
     }
 
     public static String solveDepthFirstSearch(Grid grid, Boolean visualize, SearchTreeNode root) {
@@ -38,7 +58,9 @@ public abstract class GenericSearchProblem {
         String solution = "";
         return solution;
     }
-    public abstract boolean goalTest(State s);
+    public boolean goalTest(State s){
+        return true;
+    }
 
     public abstract int pathCost(SearchTreeNode n);
 
