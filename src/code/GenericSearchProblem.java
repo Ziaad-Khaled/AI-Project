@@ -14,7 +14,7 @@ public abstract class GenericSearchProblem {
 
     public abstract  ArrayList<SearchTreeNode> expandNode(SearchTreeNode parent, Grid grid);
 
-    public String solveBreadthFirstSearch(Grid grid, Boolean visualize, SearchTreeNode root) {
+    public String  solveBreadthFirstSearch(Grid grid, Boolean visualize, SearchTreeNode root) {
         int expandedNodes = 0;
 
         PriorityQueue<SearchTreeNode> nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::getDepth));
@@ -55,7 +55,7 @@ public abstract class GenericSearchProblem {
 
             //check if n passes goal test
             if(goalTest(n.getState()))
-                return "" + n.getActionsSequence() + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
+                return "" +  Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
             ArrayList children = expandNode(n,grid);
             nodes.addAll(children);
 
@@ -98,7 +98,7 @@ public abstract class GenericSearchProblem {
 
     public String solveGreedySearch(Grid grid, Boolean visualize, SearchTreeNode root, int i) {
         int expandedNodes = 0;
-
+        int heuristicType =
         PriorityQueue<SearchTreeNode> nodes = null;
         if(i==1)
             nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::heuristic1));

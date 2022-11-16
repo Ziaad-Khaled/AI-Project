@@ -131,4 +131,9 @@ public class SearchTreeNode {
     {
         return  heuristic2() + getDepth();
     }
+
+    @Override
+    public String toString() {
+        return getState().toString() +" depth: " + getDepth();
+    }
 }

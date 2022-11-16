@@ -32,4 +32,8 @@ public class Coordinates extends Point2D {
 	{
 		return (int) ((this.getX() - c.getX()) + (this.getY() - c.getY()));
 	}
+	public String toString()
+	{
+		return "{" + this.x + ", " + this.y + "}";
+	}
 }

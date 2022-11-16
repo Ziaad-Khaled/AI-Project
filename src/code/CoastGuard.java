@@ -70,7 +70,7 @@ public class CoastGuard extends GenericSearchProblem {
         return gridString;
     }
 
-    public String solve(String grid, String strategy, Boolean visualize) {
+    public static String solve(String grid, String strategy, Boolean visualize) {
 
         //create the grid
         Grid gridObject = createGridFromString(grid);
@@ -78,22 +78,23 @@ public class CoastGuard extends GenericSearchProblem {
                 gridObject.getBlackBoxCounterInCoordinates(),0, 0, 0);
         SearchTreeNode root = new SearchTreeNode(null,new ArrayList<>(),0,initialState, gridObject);
         String solution;
+        CoastGuard p = new CoastGuard();
         switch(strategy)
         {
             case "BF":
-                solution = solveBreadthFirstSearch(gridObject, visualize, root);
+                solution = p.solveBreadthFirstSearch(gridObject, visualize, root);
                 break;
             case "DF":
-                solution = solveDepthFirstSearch(gridObject, visualize, root);
+                solution = p.solveDepthFirstSearch(gridObject, visualize, root);
                 break;
             case "ID":
-                solution = solveIterativeDeepeningSearch(gridObject, visualize, root);
+                solution = p.solveIterativeDeepeningSearch(gridObject, visualize, root);
                 break;
-            case "GR":
-                solution = solveGreedySearch(gridObject, visualize, root, 1);
+            case "GR1", "GR2":
+                solution = p.solveGreedySearch(gridObject, visualize, root, strategy.charAt(strategy.length()-1));
                 break;
-            case "AS":
-                solution = solveAStarSearch(gridObject, visualize, root, 1);
+            case "AS1", "AS2":
+                solution = p.solveAStarSearch(gridObject, visualize, root, strategy.charAt(strategy.length()-1));
                 break;
             default:
                 solution = "";
@@ -128,15 +129,16 @@ public class CoastGuard extends GenericSearchProblem {
         String[] shipsCoordinatesAndPassengersString = convertedGridArray[4].split(",");
         HashMap<Coordinates,Integer> passengersInCoordinates = new HashMap<>();//arraylist that will have all ships
 //        ArrayList<Coordinates> shipsNumberOfPassengersList = new ArrayList<>();
+        HashMap<Coordinates, Integer> blackBoxCounterInCoordinates = new HashMap<>();
         for(int i=0; i<shipsCoordinatesAndPassengersString.length; i+=3){
             double x = Double.parseDouble(shipsCoordinatesAndPassengersString[i]);
             double y = Double.parseDouble(shipsCoordinatesAndPassengersString[i+1]);
             Coordinates shipCoordinates = new Coordinates(x, y);
             int numberOfPassengers = Integer.parseInt(shipsCoordinatesAndPassengersString[i+2]);
             passengersInCoordinates.put(shipCoordinates,numberOfPassengers);
+            blackBoxCounterInCoordinates.put(shipCoordinates,0);
         }
 
-        HashMap<Coordinates, Integer> blackBoxCounterInCoordinates = new HashMap<>();
         return new Grid(m,n,C,cgCoordinates,stationCoordinatesList, passengersInCoordinates,blackBoxCounterInCoordinates);
     }
 
@@ -222,7 +224,7 @@ public class CoastGuard extends GenericSearchProblem {
     {
         int width = grid.getWidth();
         Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
-        return !(cgCoordinates.getX() >= width);
+        return !(cgCoordinates.getY() >= width);
     }
 
     public static boolean canMoveLeft(SearchTreeNode parent)
@@ -251,7 +253,8 @@ public class CoastGuard extends GenericSearchProblem {
 
         SearchTreeNode childNode = new SearchTreeNode(parent, parent.getActionsSequence(), parent.getPathCost()+cost , newState);
         //add this action to the sequence of actions from the root till this node
-        childNode.addAction("pickUp");
+        childNode.addAction("pickup");
+
         return childNode;
     }
 
@@ -312,23 +315,23 @@ public class CoastGuard extends GenericSearchProblem {
         State newState = new State(cg, passengers, blackBox, numberOfPassengersOnCG, parent.getState().getDeaths(), parent.getState().getRetrieved());
         int cost = newState.preformATimeStep();
 
-        String action = "move";
+        String action = "";
         switch (direction){
             case 'R':
                 newState.setCoastGuardLocation(new Coordinates(cg.getX(), cg.getY()+1));
-                action+="Right";
+                action+="right";
                 break;
             case 'L':
                 newState.setCoastGuardLocation(new Coordinates(cg.getX(), cg.getY()-1));
-                action+="Left";
+                action+="left";
                 break;
             case 'U':
                 newState.setCoastGuardLocation(new Coordinates(cg.getX()-1, cg.getY()));
-                action+="Up";
+                action+="up";
                 break;
             case 'D':
                 newState.setCoastGuardLocation(new Coordinates(cg.getX()+1, cg.getY()));
-                action+="Down";
+                action+="down";
                 break;
             default:
                 break;
@@ -344,6 +347,7 @@ public class CoastGuard extends GenericSearchProblem {
     public boolean goalTest(State s) {
         //check that there are no coordinates that have any passengers
         //check that all blackboxes counter reached 1
+
         if(s.getPassengersInCoordinates().isEmpty() && s.getblackBoxCountInCoordinates().isEmpty() && s.getNumberOfPassengersOnCG()==0)
             return true;
         return false;

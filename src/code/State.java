@@ -136,4 +136,11 @@ public class State{
 
         return cost;
     }
+
+    public String toString()
+    {
+        return "getPassengersInCoordinates" + this.getPassengersInCoordinates() +
+                "getblackBoxCountInCoordinates" + this.getblackBoxCountInCoordinates() +
+                "getCoastGuardLocation " + getCoastGuardLocation();
+    }
 }
