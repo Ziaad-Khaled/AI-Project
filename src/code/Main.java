@@ -1,22 +1,17 @@
 package code;
 
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        HashMap<Integer,Integer> hm = new HashMap<>();
-        hm.put(1,1);
-        hm.put(2,2);
-        hm.put(3,3);
-        for(HashMap.Entry<Integer, Integer> set : hm.entrySet())
-        {
-            if(set.getKey()==2)
-                hm.put(2,200);
-            System.out.println(set);
-        }
-        hm.values().removeIf(value -> value==200);
-        System.out.println(hm);
+        PriorityQueue<SearchTreeNode> q = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::getPathCost).reversed());
+        SearchTreeNode n1 = new SearchTreeNode(null, new ArrayList<>(), 2, null);
+        SearchTreeNode n2 = new SearchTreeNode(null, new ArrayList<>(), 4, null);
+        SearchTreeNode n3 = new SearchTreeNode(null, new ArrayList<>(), 1, null);;
+        q.add(n1);
+        q.add(n2);
+        q.add(n3);
+        System.out.println(q.peek().getPathCost());
     }
 
     public static class Ship {

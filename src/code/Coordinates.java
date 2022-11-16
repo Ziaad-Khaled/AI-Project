@@ -27,4 +27,9 @@ public class Coordinates extends Point2D {
 		this.x = x;
 		this.y = y;
 	}
+
+	public int manhattanDistance(Coordinates c)
+	{
+		return (int) ((this.getX() - c.getX()) + (this.getY() - c.getY()));
+	}
 }

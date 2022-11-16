@@ -76,7 +76,7 @@ public class CoastGuard extends GenericSearchProblem {
         Grid gridObject = createGridFromString(grid);
         State initialState = new State(gridObject.getCoastGuardLocation(),gridObject.getPassengersInCoordinates(),
                 gridObject.getBlackBoxCounterInCoordinates(),0, 0, 0);
-        SearchTreeNode root = new SearchTreeNode(null,new ArrayList<>(),0,initialState);
+        SearchTreeNode root = new SearchTreeNode(null,new ArrayList<>(),0,initialState, gridObject);
         String solution;
         switch(strategy)
         {
@@ -90,10 +90,10 @@ public class CoastGuard extends GenericSearchProblem {
                 solution = solveIterativeDeepeningSearch(gridObject, visualize, root);
                 break;
             case "GR":
-                solution = solveGreedySearch(gridObject, visualize, root);
+                solution = solveGreedySearch(gridObject, visualize, root, 1);
                 break;
             case "AS":
-                solution = solveAStarSearch(gridObject, visualize, root);
+                solution = solveAStarSearch(gridObject, visualize, root, 1);
                 break;
             default:
                 solution = "";
