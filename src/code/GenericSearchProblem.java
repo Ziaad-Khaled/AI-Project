@@ -98,7 +98,6 @@ public abstract class GenericSearchProblem {
 
     public String solveGreedySearch(Grid grid, Boolean visualize, SearchTreeNode root, int i) {
         int expandedNodes = 0;
-        int heuristicType =
         PriorityQueue<SearchTreeNode> nodes = null;
         if(i==1)
             nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::heuristic1));
