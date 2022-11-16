@@ -91,7 +91,7 @@ public class CoastGuard extends GenericSearchProblem {
                 solution = p.solveIterativeDeepeningSearch(gridObject, visualize, root);
                 break;
             case "GR1", "GR2":
-                solution = p.solveGreedySearch(gridObject, visualize, root, strategy.charAt(strategy.length()-1));
+                solution = p.solveGreedySearch(gridObject, visualize, root, Integer.parseInt("" + strategy.charAt(strategy.length()-1)));
                 break;
             case "AS1", "AS2":
                 solution = p.solveAStarSearch(gridObject, visualize, root, strategy.charAt(strategy.length()-1));

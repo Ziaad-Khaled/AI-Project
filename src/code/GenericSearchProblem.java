@@ -99,6 +99,7 @@ public abstract class GenericSearchProblem {
     public String solveGreedySearch(Grid grid, Boolean visualize, SearchTreeNode root, int i) {
         int expandedNodes = 0;
         PriorityQueue<SearchTreeNode> nodes = null;
+
         if(i==1)
             nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::heuristic1));
         else if (i==2) {
@@ -108,6 +109,7 @@ public abstract class GenericSearchProblem {
         //the less the depth of the node, the higher the priority
 
         nodes.add(root);
+
         while(true)
         {
             if(nodes.isEmpty())
@@ -118,7 +120,9 @@ public abstract class GenericSearchProblem {
 
             //check if n passes goal test
             if(goalTest(n.getState()))
+            {
                 return "" + n.getActionsSequence() + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
+            }
             ArrayList children = expandNode(n,grid);
             nodes.addAll(children);
 
