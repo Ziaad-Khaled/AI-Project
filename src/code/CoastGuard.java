@@ -217,14 +217,14 @@ public class CoastGuard extends GenericSearchProblem {
     {
         int height = grid.getHeight();
         Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
-        return !(cgCoordinates.getX() >= height);
+        return !(cgCoordinates.getX() >= height-1);
     }
 
     public static boolean canMoveRight(SearchTreeNode parent, Grid grid)
     {
         int width = grid.getWidth();
         Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
-        return !(cgCoordinates.getY() >= width);
+        return !(cgCoordinates.getY() >= width-1);
     }
 
     public static boolean canMoveLeft(SearchTreeNode parent)
