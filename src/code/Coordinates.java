@@ -36,4 +36,8 @@ public class Coordinates extends Point2D {
 	{
 		return "{" + this.x + ", " + this.y + "}";
 	}
+	public boolean equals(Coordinates c)
+	{
+		return this.x==c.getX() && this.y==c.getY();
+	}
 }

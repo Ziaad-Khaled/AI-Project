@@ -4,8 +4,8 @@ import java.awt.geom.Point2D;
 import java.util.*;
 
 public class Grid {
-	private int width;//M
-    private int height;//N
+	private int height;//M
+    private int width;//N
     private int passengersMax; //C
     private HashSet<Coordinates> stationsCoordinatesList;
     Coordinates cgCoordinates;
@@ -87,7 +87,7 @@ public class Grid {
     public Grid(int m, int n, int C, Coordinates cgCoordinates ,HashSet<Coordinates> stationsCoordinatesList, HashMap<Coordinates,Integer> passengersInCoordinates,
 				HashMap<Coordinates,Integer> blackBoxCounterInCoordinates)
     {
-        width = m; height= n;
+        height = m; width= n;
         passengersMax = C;
         this.stationsCoordinatesList = stationsCoordinatesList;
         this.passengersInCoordinates = passengersInCoordinates;

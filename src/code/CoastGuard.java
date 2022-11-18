@@ -242,10 +242,11 @@ public class CoastGuard extends GenericSearchProblem {
         //the capacity of the cg now is its maximum capacity - the number of passengers that it now has
         int cgCapacity = grid.getPassengersMax() - numberOfPassengersOnCG;
 
-        //the coordinates of the CG should now be decremented by cgCapacity passengers
-        passengers.put(cgLocation, passengers.get(cgLocation)-cgCapacity);
+        //the coordinates of the CG should now be decremented by the minimum of (cgCapacity, ship passengers) passengers
+        int passengersRescued = Math.min(cgCapacity,passengers.get(cgLocation));
+        passengers.put(cgLocation, passengers.get(cgLocation)-passengersRescued);
 
-        State newState = new State(cgLocation, passengers, blackBox, numberOfPassengersOnCG, parent.getState().getDeaths(), parent.getState().getRetrieved());
+        State newState = new State(cgLocation, passengers, blackBox, numberOfPassengersOnCG + passengersRescued, parent.getState().getDeaths(), parent.getState().getRetrieved());
 
         //decrement all the passengers who died and increment all the black boxes count if no passengers exist
         int cost = newState.preformATimeStep();
@@ -347,7 +348,6 @@ public class CoastGuard extends GenericSearchProblem {
     public boolean goalTest(State s) {
         //check that there are no coordinates that have any passengers
         //check that all blackboxes counter reached 1
-
         if(s.getPassengersInCoordinates().isEmpty() && s.getblackBoxCountInCoordinates().isEmpty() && s.getNumberOfPassengersOnCG()==0)
             return true;
         return false;
