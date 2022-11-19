@@ -96,6 +96,8 @@ public abstract class GenericSearchProblem {
                 ArrayList children = expandNode(n,grid);
                 expandedNodes++;
                 nodes.addAll(children);
+                if(visualize)
+                    visualizeNode(n, expandedNodes);
             }
 
         }
@@ -131,6 +133,9 @@ public abstract class GenericSearchProblem {
             expandedNodes++;
             nodes.addAll(children);
 
+            if(visualize)
+                visualizeNode(n,expandedNodes);
+
         }
     }
 
@@ -159,6 +164,8 @@ public abstract class GenericSearchProblem {
                 return "" + n.getActionsSequence() + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
             ArrayList children = expandNode(n,grid);
             expandedNodes++;
+            if(visualize)
+                visualizeNode(n,expandedNodes);
             nodes.addAll(children);
         }
     }
