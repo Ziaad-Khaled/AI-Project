@@ -111,14 +111,14 @@ public class State{
                 int oldValue =  blackBoxCounterInCoordinates.get(set.getKey());
 
                 /// we should add a ship class to know
-                // if black box counter is greater than 100 we should not increment it again
-                if(oldValue<100)
+                // if black box counter is greater than 20 we should not increment it again
+                if(oldValue<20)
                 {
                     blackBoxCounterInCoordinates.replace(set.getKey(), oldValue + 1);
 
                     //if the black box became non-retrievable in this step, increase cost
                     //remove the ship from both hashmaps
-                    if(oldValue+1 == 100)
+                    if(oldValue+1 == 20)
                     {
                         cost++;
                         //it will be difficult to remove the keys inside the loop (will result in errors)

@@ -87,7 +87,7 @@ public class Grid {
     public Grid(int m, int n, int C, Coordinates cgCoordinates ,HashSet<Coordinates> stationsCoordinatesList, HashMap<Coordinates,Integer> passengersInCoordinates,
 				HashMap<Coordinates,Integer> blackBoxCounterInCoordinates)
     {
-        height = m; width= n;
+        height = n; width= m;
         passengersMax = C;
         this.stationsCoordinatesList = stationsCoordinatesList;
         this.passengersInCoordinates = passengersInCoordinates;

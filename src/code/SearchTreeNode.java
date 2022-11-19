@@ -82,8 +82,8 @@ public class SearchTreeNode {
     public int heuristic1()
     {
         //heuristic is the minimum of two situations:
-        //Situation 1: the ship with the maximum number of passengers will sink, all passengers will sink and we will not retrieve black box
-        //So time points (depth to the goal) will be number of passengers + 100 (counts of the black box)
+        //Situation 1: the ship with the maximum number of passengers will sink, all passengers will sink
+        //So time points (depth to the goal) will be number of passengers + 1 (lower bound to retrieve black box of the black box)
         //Situation 2: The ship with the max number of passengers will be rescued and the black box will be retrieved
         //So time points will be the actions needed to rescue all of them and retrieve black box
         //that is, number of moves to rescue and move them to station and retrieve black box
@@ -119,7 +119,7 @@ public class SearchTreeNode {
                 minDistanceToStation = c.manhattanDistance(maxPassengersLocation);
         }
 
-        return Math.min(maxPassengers+100, distanceToCoordinates+(int)minDistanceToStation+2);
+        return Math.min(maxPassengers+1, distanceToCoordinates+(int)minDistanceToStation+2);
 
     }
 

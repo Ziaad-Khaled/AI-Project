@@ -146,7 +146,7 @@ public class CoastGuard extends GenericSearchProblem {
 
         ArrayList<SearchTreeNode> children = new ArrayList<>();
 
-        if(canPickUp(parent))
+        if(canPickUp(parent, grid))
             children.add(pickUp(parent,grid));
 
         if(canDrop(parent, grid))
@@ -170,13 +170,16 @@ public class CoastGuard extends GenericSearchProblem {
         return children;
     }
 
-    public static boolean canPickUp(SearchTreeNode parent)
+    public static boolean canPickUp(SearchTreeNode parent, Grid grid)
     {
         Coordinates cgCoordinates = parent.getState().getCoastGuardLocation();
         HashMap<Coordinates, Integer> passengersInCoordinates = parent.getState().getNumberOfPassngersInCoordinates();
+        int numberOfPassengersOnCG = parent.getState().getNumberOfPassengersOnCG();
+        int maxPassengersOnCG = grid.getPassengersMax();
 
         //check that the cg location has a ship and the number of passengers on the ship is not zero
-        return passengersInCoordinates.containsKey(cgCoordinates) && passengersInCoordinates.get(cgCoordinates)-1>0;
+        return passengersInCoordinates.containsKey(cgCoordinates) && passengersInCoordinates.get(cgCoordinates)-1>0
+                && numberOfPassengersOnCG<maxPassengersOnCG;
     }
 
     public static boolean canDrop(SearchTreeNode parent, Grid grid)
@@ -202,7 +205,7 @@ public class CoastGuard extends GenericSearchProblem {
 
         //check that the cg is in the same location as a ship, it has no passengers
         if(passengersInCoordinates.containsKey(cgCoordinates) && passengersInCoordinates.get(cgCoordinates) == 0
-            && blackBoxCounterInCoordinates.get(cgCoordinates)<100)
+            && blackBoxCounterInCoordinates.get(cgCoordinates)<20)
             return true;
         return false;
     }
