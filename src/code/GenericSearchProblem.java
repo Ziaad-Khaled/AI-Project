@@ -29,6 +29,9 @@ public abstract class GenericSearchProblem {
             SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
             expandedNodes++;
 
+            if(visualize)
+                visualizeNode(n, expandedNodes);
+
             //check if n passes goal test
             if(goalTest(n.getState()))
                 return "" + n.getActionsSequence() + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
@@ -51,12 +54,14 @@ public abstract class GenericSearchProblem {
                 return "failure";
 
             SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
+            expandedNodes++;
 
+            if(visualize)
+                visualizeNode(n, expandedNodes);
             //check if n passes goal test
             if(goalTest(n.getState()))
                 return "" +  Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
             ArrayList children = expandNode(n,grid);
-            expandedNodes++;
             nodes.addAll(children);
 
         }
@@ -161,7 +166,10 @@ public abstract class GenericSearchProblem {
 
     public abstract int pathCost(SearchTreeNode n);
 
-
-
-
+    void visualizeNode(SearchTreeNode node, int nodeNumber)
+    {
+        System.out.println("Node Number is: " + nodeNumber);
+        Visualizer.visualizeNode(node);
+        System.out.println("**********************************************************");
+    }
 }

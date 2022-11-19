@@ -9,6 +9,7 @@ public class Grid {
     private int passengersMax; //C
     private HashSet<Coordinates> stationsCoordinatesList;
     Coordinates cgCoordinates;
+	private HashMap<Coordinates,Integer> passengersInCoordinates;
 
 	public HashMap<Coordinates, Integer> getPassengersInCoordinates() {
 		return passengersInCoordinates;
@@ -17,9 +18,6 @@ public class Grid {
 	public void setPassengersInCoordinates(HashMap<Coordinates, Integer> passengersInCoordinates) {
 		this.passengersInCoordinates = passengersInCoordinates;
 	}
-
-	private HashMap<Coordinates,Integer> passengersInCoordinates;
-
 	public HashMap<Coordinates, Integer> getBlackBoxCounterInCoordinates() {
 		return blackBoxCounterInCoordinates;
 	}

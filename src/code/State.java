@@ -11,15 +11,9 @@ public class State{
     //state in the world is specified by the coastGuard location, the number of passengers in each ship, black box counter
     //in each ship
     private Coordinates coastGuardLocation;
-
-
-
     private HashMap<Coordinates,Integer> passengersInCoordinates;
     private HashMap<Coordinates,Integer> blackBoxCounterInCoordinates;
-
     private int numberOfPassengersOnCG;
-
-
     private int deaths;
     private int retrieved;
 

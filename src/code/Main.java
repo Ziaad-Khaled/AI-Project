@@ -22,6 +22,9 @@ public class Main {
 
             SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
             expandedNodes++;
+            //System.out.println("*******************************************************");
+            //Visualizer.visualizeNode(n);
+
 
             //check if n passes goal test
             if(p.goalTest(n.getState()))
