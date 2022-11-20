@@ -1,12 +1,18 @@
 package code;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Visualizer {
 
     private static void visualizeGrid(SearchTreeNode node) {
         ArrayList<Integer> passengersInCoordinates = new ArrayList<>();
         ArrayList<Integer> blackBoxCounterInCoordinates = new ArrayList<>();
+        HashSet<Coordinates> stations = node.getGrid().getStationsCoordinatesList();
+
+        visualizeFirstRow(node.getGrid().getWidth());
+
+
         for(int i=0;i<node.getGrid().getHeight();i++)
         {
             System.out.print((i+1) + ": ");
@@ -34,7 +40,15 @@ public class Visualizer {
                 }
                 else
                 {
-                    System.out.print("    | ");
+                    if(stations.contains(cellCoordinate))
+                    {
+                        System.out.print(" s  | ");
+                    }
+                    else
+                    {
+                        System.out.print("    | ");
+                    }
+
                 }
             }
             System.out.println();
@@ -49,6 +63,15 @@ public class Visualizer {
         {
             System.out.println("The counter at blackbox " + (i+1) + " is: " + blackBoxCounterInCoordinates.get(i));
         }
+    }
+
+    private static void visualizeFirstRow(int nodeWidth) {
+        System.out.print("   ");
+        for(int i=1;i<=nodeWidth;i++)
+        {
+            System.out.print(" "+ i+ "  | ");
+        }
+        System.out.println();
     }
 
     private static void visualizeState(State state) {
