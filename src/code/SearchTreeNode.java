@@ -250,11 +250,11 @@ public class SearchTreeNode {
 
     public int AStarWithH1()
     {
-        return  heuristic1() + getDepth();
+        return  heuristic1() + getPathCost();
     }
     public int AStarWithH2()
     {
-        return  heuristic2() + getDepth();
+        return  heuristic2() + getPathCost();
     }
 
     @Override

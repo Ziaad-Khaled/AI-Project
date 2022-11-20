@@ -3,6 +3,7 @@ package code;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class State{
 //    private Point2D[] ship;
@@ -136,5 +137,21 @@ public class State{
         return "getPassengersInCoordinates" + this.getPassengersInCoordinates() +
                 "getblackBoxCountInCoordinates" + this.getblackBoxCountInCoordinates() +
                 "getCoastGuardLocation " + getCoastGuardLocation();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        State s = (State) obj;
+        return this.getPassengersInCoordinates().equals(s.getPassengersInCoordinates()) &&
+                this.getblackBoxCountInCoordinates().equals(s.getblackBoxCountInCoordinates()) &&
+                this.getNumberOfPassengersOnCG() == s.getNumberOfPassengersOnCG() &&
+                this.getRetrieved() == s.getRetrieved() &&
+                this.getDeaths() == s.getDeaths();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPassengersInCoordinates(),getblackBoxCountInCoordinates(), getNumberOfPassengersOnCG(),
+                getRetrieved(), getDeaths());
     }
 }
