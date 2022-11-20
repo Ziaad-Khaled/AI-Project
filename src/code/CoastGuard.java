@@ -94,7 +94,7 @@ public class CoastGuard extends GenericSearchProblem {
                 solution = p.solveGreedySearch(gridObject, visualize, root, Integer.parseInt("" + strategy.charAt(strategy.length()-1)));
                 break;
             case "AS1", "AS2":
-                solution = p.solveAStarSearch(gridObject, visualize, root, strategy.charAt(strategy.length()-1));
+                solution = p.solveAStarSearch(gridObject, visualize, root, Integer.parseInt("" + strategy.charAt(strategy.length()-1)));
                 break;
             default:
                 solution = "";
@@ -142,30 +142,58 @@ public class CoastGuard extends GenericSearchProblem {
         return new Grid(m,n,C,cgCoordinates,stationCoordinatesList, passengersInCoordinates,blackBoxCounterInCoordinates);
     }
 
-    public ArrayList<SearchTreeNode> expandNode(SearchTreeNode parent, Grid grid){
+    public ArrayList<SearchTreeNode> expandNode(SearchTreeNode parent, Grid grid, HashSet<State> uniqueStates){
 
         ArrayList<SearchTreeNode> children = new ArrayList<>();
 
         if(canPickUp(parent, grid))
-            children.add(pickUp(parent,grid));
+        {
+            SearchTreeNode n = pickUp(parent,grid, uniqueStates);
+            if(n!=null)
+                children.add(n);
+        }
 
         if(canDrop(parent, grid))
-            children.add(drop(parent));
+        {
+            SearchTreeNode n = drop(parent, uniqueStates);
+            if(n!=null)
+                children.add(n);
+        }
 
         if(canRetrieve(parent))
-            children.add(retrieve(parent));
+        {
+            SearchTreeNode n = retrieve(parent, uniqueStates);
+            if(n!=null)
+                children.add(n);
+        }
 
         if(canMoveRight(parent, grid))
-            children.add(move('R', parent));
+        {
+            SearchTreeNode n = move('R', parent, uniqueStates);
+            if(n!=null)
+                children.add(n);
+        }
 
         if(canMoveLeft(parent))
-            children.add(move('L', parent));
+        {
+            SearchTreeNode n = move('L', parent, uniqueStates);
+            if(n!=null)
+                children.add(n);
+        }
 
         if(canMoveUp(parent))
-            children.add(move('U', parent));
+        {
+            SearchTreeNode n = move('U', parent, uniqueStates);
+            if(n!=null)
+                children.add(n);
+        }
 
         if(canMoveDown(parent, grid))
-            children.add(move('D', parent));
+        {
+            SearchTreeNode n = move('D', parent, uniqueStates);
+            if(n!=null)
+                children.add(n);
+        }
 
         return children;
     }
@@ -236,7 +264,7 @@ public class CoastGuard extends GenericSearchProblem {
         return cgCoordinates.getY() != 0;
     }
 
-    public static SearchTreeNode pickUp(SearchTreeNode parent, Grid grid){
+    public static SearchTreeNode pickUp(SearchTreeNode parent, Grid grid, HashSet<State> uniqueStates){
         //extract last state data
         Coordinates cgLocation = (Coordinates) parent.getState().getCoastGuardLocation().clone();//clone to avoid altering data of parent
         HashMap<Coordinates, Integer> passengers = (HashMap<Coordinates, Integer>) parent.getState().getNumberOfPassngersInCoordinates().clone();
@@ -258,11 +286,13 @@ public class CoastGuard extends GenericSearchProblem {
         SearchTreeNode childNode = new SearchTreeNode(parent, parent.getActionsSequence(), parent.getPathCost()+cost , newState);
         //add this action to the sequence of actions from the root till this node
         childNode.addAction("pickup");
-
+        if(uniqueStates.contains(newState))
+            return null;
+        uniqueStates.add(newState);
         return childNode;
     }
 
-    public static SearchTreeNode drop(SearchTreeNode parent){
+    public static SearchTreeNode drop(SearchTreeNode parent, HashSet<State> uniqueStates){
         //extract last state data
         Coordinates cgLocation = (Coordinates) parent.getState().getCoastGuardLocation().clone();//clone to avoid altering data of parent
         HashMap<Coordinates, Integer> passengers = (HashMap<Coordinates, Integer>) parent.getState().getNumberOfPassngersInCoordinates().clone();
@@ -278,10 +308,13 @@ public class CoastGuard extends GenericSearchProblem {
         SearchTreeNode childNode = new SearchTreeNode(parent, parent.getActionsSequence(), parent.getPathCost()+cost , newState);
         //add this action to the sequence of actions from the root till this node
         childNode.addAction("drop");
+        if(uniqueStates.contains(newState))
+            return null;
+        uniqueStates.add(newState);
         return childNode;
     }
 
-    public static SearchTreeNode retrieve(SearchTreeNode parent){
+    public static SearchTreeNode retrieve(SearchTreeNode parent, HashSet<State> uniqueStates){
         //extract last state data
         Coordinates cgLocation = (Coordinates) parent.getState().getCoastGuardLocation().clone();//clone to avoid altering data of parent
         HashMap<Coordinates, Integer> passengers = (HashMap<Coordinates, Integer>) parent.getState().getNumberOfPassngersInCoordinates().clone();
@@ -304,10 +337,13 @@ public class CoastGuard extends GenericSearchProblem {
         SearchTreeNode childNode = new SearchTreeNode(parent, parent.getActionsSequence(), parent.getPathCost()+cost , newState);
         //add this action to the sequence of actions from the root till this node
         childNode.addAction("retrieve");
+        if(uniqueStates.contains(newState))
+            return null;
+        uniqueStates.add(newState);
         return childNode;
     }
 
-    public static SearchTreeNode move(char direction, SearchTreeNode parent)
+    public static SearchTreeNode move(char direction, SearchTreeNode parent, HashSet<State> uniqueStates)
     {
         //extract last state data
         Coordinates cg = parent.getState().getCoastGuardLocation();
@@ -344,6 +380,9 @@ public class CoastGuard extends GenericSearchProblem {
         SearchTreeNode child = new SearchTreeNode(parent, parent.getActionsSequence(), cost + parent.getPathCost(), newState);
         //add this action to the sequence of actions from the root till this node
         child.addAction(action);
+        if(uniqueStates.contains(newState))
+            return null;
+        uniqueStates.add(newState);
         return child;
     }
 

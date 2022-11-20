@@ -12,15 +12,16 @@ public abstract class GenericSearchProblem {
     SearchTreeNode root;
     String[] actions;
 
-    public abstract  ArrayList<SearchTreeNode> expandNode(SearchTreeNode parent, Grid grid);
+    public abstract  ArrayList<SearchTreeNode> expandNode(SearchTreeNode parent, Grid grid, HashSet<State> uniqueStates);
 
     public String  solveBreadthFirstSearch(Grid grid, Boolean visualize, SearchTreeNode root) {
         int expandedNodes = 0;
 
         PriorityQueue<SearchTreeNode> nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::getDepth));
         //the less the depth of the node, the higher the priority
-
         nodes.add(root);
+        HashSet<State> uniqueStates = new HashSet<>();
+        uniqueStates.add(root.getState());
         while(true)
         {
             if(nodes.isEmpty())
@@ -34,8 +35,8 @@ public abstract class GenericSearchProblem {
 
             //check if n passes goal test
             if(goalTest(n.getState()))
-                return "" + n.getActionsSequence() + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
-            ArrayList children = expandNode(n,grid);
+                return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
+            ArrayList children = expandNode(n,grid, uniqueStates);
             nodes.addAll(children);
 
         }
@@ -46,8 +47,9 @@ public abstract class GenericSearchProblem {
 
         PriorityQueue<SearchTreeNode> nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::getDepth).reversed());
         //the higher the depth of the node, the higher the priority
-
         nodes.add(root);
+        HashSet<State> uniqueStates = new HashSet<>();
+        uniqueStates.add(root.getState());
         while(true)
         {
             if(nodes.isEmpty())
@@ -61,7 +63,7 @@ public abstract class GenericSearchProblem {
             //check if n passes goal test
             if(goalTest(n.getState()))
                 return "" +  Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
-            ArrayList children = expandNode(n,grid);
+            ArrayList children = expandNode(n,grid, uniqueStates);
             nodes.addAll(children);
 
         }
@@ -74,7 +76,8 @@ public abstract class GenericSearchProblem {
         //the higher the depth of the node, the higher the priority
 
         nodes.add(root);
-
+        HashSet<State> uniqueStates = new HashSet<>();
+        uniqueStates.add(root.getState());
         int maxLevel=0;//iterative deepening search starts with maxLevel=0 assuming that root has level=0
         while(true)
         {
@@ -83,6 +86,8 @@ public abstract class GenericSearchProblem {
             {
                 maxLevel++; //try higher level
                 nodes.add(root);//start with queue having only the root again
+                uniqueStates = new HashSet<>();
+                uniqueStates.add(root.getState());
             }
 
             SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
@@ -90,10 +95,10 @@ public abstract class GenericSearchProblem {
 
             //check if n passes goal test
             if(goalTest(n.getState()))
-                return "" + n.getActionsSequence() + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
+                return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
             if(n.getDepth()<maxLevel)
             {
-                ArrayList children = expandNode(n,grid);
+                ArrayList children = expandNode(n,grid, uniqueStates);
                 expandedNodes++;
                 nodes.addAll(children);
                 if(visualize)
@@ -116,7 +121,8 @@ public abstract class GenericSearchProblem {
         //the less the depth of the node, the higher the priority
 
         nodes.add(root);
-
+        HashSet<State> uniqueStates = new HashSet<>();
+        uniqueStates.add(root.getState());
         while(true)
         {
             if(nodes.isEmpty())
@@ -127,9 +133,9 @@ public abstract class GenericSearchProblem {
             //check if n passes goal test
             if(goalTest(n.getState()))
             {
-                return "" + n.getActionsSequence() + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
+                return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
             }
-            ArrayList children = expandNode(n,grid);
+            ArrayList children = expandNode(n,grid, uniqueStates);
             expandedNodes++;
             nodes.addAll(children);
 
@@ -152,6 +158,8 @@ public abstract class GenericSearchProblem {
         //the less the depth of the node, the higher the priority
 
         nodes.add(root);
+        HashSet<State> uniqueStates = new HashSet<>();
+        uniqueStates.add(root.getState());
         while(true)
         {
             if(nodes.isEmpty())
@@ -161,8 +169,8 @@ public abstract class GenericSearchProblem {
 
             //check if n passes goal test
             if(goalTest(n.getState()))
-                return "" + n.getActionsSequence() + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
-            ArrayList children = expandNode(n,grid);
+                return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
+            ArrayList children = expandNode(n,grid, uniqueStates);
             expandedNodes++;
             if(visualize)
                 visualizeNode(n,expandedNodes);

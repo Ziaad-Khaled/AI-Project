@@ -7,9 +7,9 @@ public class Main {
 
 
 
-        String grid0 = "2,2;50;0,0;0,0;0,1,50,1,0,60;";
+        String grid0 = "5,6;50;0,1;0,4,3,3;1,1,90;";
 
-//        PriorityQueue<SearchTreeNode> nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::getDepth).reversed());
+        //        PriorityQueue<SearchTreeNode> nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::getDepth).reversed());
 //        //the higher the depth of the node, the higher the priority
 //        Grid gridObject = CoastGuard.createGridFromString(grid0);
 //        State initialState = new State(gridObject.getCoastGuardLocation(),gridObject.getPassengersInCoordinates(),
@@ -40,38 +40,41 @@ public class Main {
 
         //BFS
 
-//        Grid gridObject = CoastGuard.createGridFromString(grid0);
-//        State initialState = new State(gridObject.getCoastGuardLocation(),gridObject.getPassengersInCoordinates(),
-//                gridObject.getBlackBoxCounterInCoordinates(),0, 0, 0);
-//        SearchTreeNode root = new SearchTreeNode(null,new ArrayList<>(),0,initialState, gridObject);
-//        CoastGuard p = new CoastGuard();
-//        int expandedNodes = 0;
-//
-//        PriorityQueue<SearchTreeNode> nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::getDepth));
-//        //the less the depth of the node, the higher the priority
-//
-//        nodes.add(root);
-//        while(true)
-//        {
-//            if(nodes.isEmpty())
-//                System.out.println("failure");
-//
-//            SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
-//            expandedNodes++;
-//
-//            //check if n passes goal test
-//            if(p.goalTest(n.getState()))
-//            {
-//                System.out.println(n);
-//                System.out.println("" + /*n.getActionsSequence()+*/ ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes);
-//                System.out.println(n.getActionsSequence());
-//                return;
-//            }
-//
-//            ArrayList children = p.expandNode(n,gridObject);
-//            nodes.addAll(children);
-//
-//        }
+        Grid gridObject = CoastGuard.createGridFromString(grid0);
+        State initialState = new State(gridObject.getCoastGuardLocation(),gridObject.getPassengersInCoordinates(),
+                gridObject.getBlackBoxCounterInCoordinates(),0, 0, 0);
+        SearchTreeNode root = new SearchTreeNode(null,new ArrayList<>(),0,initialState, gridObject);
+        CoastGuard p = new CoastGuard();
+        int expandedNodes = 0;
+
+        PriorityQueue<SearchTreeNode> nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::getDepth));
+        //the less the depth of the node, the higher the priority
+
+        nodes.add(root);
+        HashSet <State> uniqueStates = new HashSet<>();
+        uniqueStates.add(root.getState());
+        while(true)
+        {
+            if(nodes.isEmpty())
+                System.out.println("failure");
+
+            SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
+            expandedNodes++;
+
+            //check if n passes goal test
+            if(p.goalTest(n.getState()))
+            {
+                System.out.println(n);
+                System.out.println("" + /*n.getActionsSequence()+*/ ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes);
+                System.out.println(n.getActionsSequence());
+                return;
+            }
+
+            ArrayList children = p.expandNode(n,gridObject, uniqueStates);
+            nodes.addAll(children);
+            System.out.println(uniqueStates.size());
+
+        }
 
 
         //A*
