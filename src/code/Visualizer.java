@@ -2,6 +2,7 @@ package code;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 public class Visualizer {
 
@@ -21,32 +22,55 @@ public class Visualizer {
                 Coordinates cellCoordinate = new Coordinates(i,j);
                 Integer passengerCount = node.getState().getPassengersInCoordinates().get(cellCoordinate);
                 Integer blackBoxCount = node.getState().getblackBoxCountInCoordinates().get(cellCoordinate);
+                boolean coastGuardLocation = false;
                 if(node.getState().getCoastGuardLocation().equals(cellCoordinate))
                 {
-                    System.out.print("cg  | ");
+                    coastGuardLocation = true;
                 }
-                else if(passengerCount != null)
+
+                if(passengerCount != null)
                 {
                     if(passengerCount < 1)
                     {
                         blackBoxCounterInCoordinates.add(blackBoxCount);
-                        System.out.print("bb" + blackBoxCounterInCoordinates.size() +  " | ");
+                        if(coastGuardLocation)
+                        {
+                            System.out.print("cg,bb" + blackBoxCounterInCoordinates.size() +  "| ");
+                            coastGuardLocation = false;
+                        }
+                        else
+                            System.out.print("bb" + blackBoxCounterInCoordinates.size() +  "   | ");
                     }
                     else
                     {
                         passengersInCoordinates.add(passengerCount);
-                        System.out.print("sh" + passengersInCoordinates.size()+   " | ");
+                        if(coastGuardLocation)
+                        {
+                            System.out.print("cg,sh" + passengersInCoordinates.size() +  "| ");
+                            coastGuardLocation = false;
+                        }
+                        else
+                            System.out.print(" sh" + passengersInCoordinates.size() +  "  | ");
                     }
                 }
                 else
                 {
                     if(stations.contains(cellCoordinate))
                     {
-                        System.out.print(" s  | ");
+                        if(coastGuardLocation)
+                        {
+                            System.out.print("cg,s| ");
+                            coastGuardLocation = false;
+                        }
+                        else
+                            System.out.print("  s   | ");
                     }
                     else
                     {
-                        System.out.print("    | ");
+                        if(coastGuardLocation)
+                            System.out.print(" cg   | ");
+                        else
+                            System.out.print("      | ");
                     }
 
                 }
@@ -63,13 +87,14 @@ public class Visualizer {
         {
             System.out.println("The counter at blackbox " + (i+1) + " is: " + blackBoxCounterInCoordinates.get(i));
         }
+        System.out.println("Maximum number on coast guard: " + node.getGrid().getPassengersMax());
     }
 
     private static void visualizeFirstRow(int nodeWidth) {
         System.out.print("   ");
         for(int i=1;i<=nodeWidth;i++)
         {
-            System.out.print(" "+ i+ "  | ");
+            System.out.print("  "+ i+ "   | ");
         }
         System.out.println();
     }
@@ -84,5 +109,23 @@ public class Visualizer {
     {
         visualizeGrid(node);
         visualizeState(node.getState());
+    }
+
+    public static void visualizePathToGoalTest(SearchTreeNode node) {
+        LinkedList<SearchTreeNode> path = new LinkedList<>();
+        while(node != null)
+        {
+            path.addFirst(node);
+            node = node.getParent();
+        }
+        int counter = 1;
+        while(!path.isEmpty())
+        {
+            System.out.println("Node Number: " + counter);
+            visualizeNode(path.getFirst());
+            path.removeFirst();
+            System.out.println("********************************************************");
+            counter++;
+        }
     }
 }

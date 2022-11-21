@@ -31,12 +31,15 @@ public abstract class GenericSearchProblem {
 
             expandedNodes++;
 
-            if(visualize)
-                visualizeNode(n, expandedNodes);
-
             //check if n passes goal test
             if(goalTest(n.getState()))
+            {
+                if(visualize)
+                {
+                    Visualizer.visualizePathToGoalTest(n);
+                }
                 return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
+            }
             ArrayList children = expandNode(n,grid, uniqueStates);
             nodes.addAll(children);
 
@@ -59,11 +62,15 @@ public abstract class GenericSearchProblem {
             SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
             expandedNodes++;
 
-            if(visualize)
-                visualizeNode(n, expandedNodes);
             //check if n passes goal test
             if(goalTest(n.getState()))
+            {
+                if(visualize)
+                {
+                    Visualizer.visualizePathToGoalTest(n);
+                }
                 return "" +  Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
+            }
             ArrayList children = expandNode(n,grid, uniqueStates);
             nodes.addAll(children);
 
@@ -96,14 +103,18 @@ public abstract class GenericSearchProblem {
 
             //check if n passes goal test
             if(goalTest(n.getState()))
+            {
+                if(visualize)
+                {
+                    Visualizer.visualizePathToGoalTest(n);
+                }
                 return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
+            }
             if(n.getDepth()<maxLevel)
             {
                 ArrayList children = expandNode(n,grid, uniqueStates);
                 expandedNodes++;
                 nodes.addAll(children);
-                if(visualize)
-                    visualizeNode(n, expandedNodes);
             }
 
         }
@@ -134,14 +145,15 @@ public abstract class GenericSearchProblem {
             //check if n passes goal test
             if(goalTest(n.getState()))
             {
+                if(visualize)
+                {
+                    Visualizer.visualizePathToGoalTest(n);
+                }
                 return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
             }
             ArrayList children = expandNode(n,grid, uniqueStates);
             expandedNodes++;
             nodes.addAll(children);
-
-            if(visualize)
-                visualizeNode(n,expandedNodes);
 
         }
     }
@@ -170,11 +182,16 @@ public abstract class GenericSearchProblem {
 
             //check if n passes goal test
             if(goalTest(n.getState()))
+            {
+                if(visualize)
+                {
+                    Visualizer.visualizePathToGoalTest(n);
+                }
                 return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
+            }
+
             ArrayList children = expandNode(n,grid, uniqueStates);
             expandedNodes++;
-            if(visualize)
-                visualizeNode(n,expandedNodes);
             nodes.addAll(children);
         }
     }
@@ -182,10 +199,5 @@ public abstract class GenericSearchProblem {
 
     public abstract int pathCost(SearchTreeNode n);
 
-    void visualizeNode(SearchTreeNode node, int nodeNumber)
-    {
-        System.out.println("Node Number is: " + nodeNumber);
-        Visualizer.visualizeNode(node);
-        System.out.println("**********************************************************");
-    }
+
 }
