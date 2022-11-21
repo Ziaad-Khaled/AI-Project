@@ -165,7 +165,7 @@ public abstract class GenericSearchProblem {
         if(i==1)
             nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::AStarWithH1));
         else if (i==2) {
-            nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::AStarWithH1));
+            nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::AStarWithH2));
         }
         else return "i must be 1 or 2";
         //the less the depth of the node, the higher the priority

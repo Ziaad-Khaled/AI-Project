@@ -1,6 +1,5 @@
 package code;
 
-import java.sql.SQLOutput;
 import java.util.*;
 
 public class SearchTreeNode {
@@ -82,6 +81,22 @@ public class SearchTreeNode {
 
     public int heuristic1()
     {
+
+//        if(getState().getPassengersInCoordinates().size()==0)
+//            //no more ships and no more black boxes
+//            return 0;//a goal node will have h=0
+//        HashMap<Coordinates, Integer> passengersInCoordinates = getState().getPassengersInCoordinates();
+//        Coordinates cgCoordinates = this.getState().getCoastGuardLocation();
+//        HashMap<Coordinates, Integer> distancesToRescueShips =(HashMap<Coordinates, Integer>) passengersInCoordinates.clone();
+//        distancesToRescueShips.replaceAll((shipCoordinate, v)->v=cgCoordinates.manhattanDistance(shipCoordinate) +
+//                shipCoordinate.manhattanDistance(neareastStation(shipCoordinate)));
+//        HashMap<Coordinates, Integer> deathsToRescueShip = computeDeathsToRescueShip(distancesToRescueShips);
+//
+//
+//        return Collections.min(deathsToRescueShip.values());
+
+
+
         //heuristic is the minimum of two situations:
         //Situation 1: the ship with the maximum number of passengers will sink, all passengers will sink
         //So time points (depth to the goal) will be number of passengers + 1 (lower bound to retrieve black box of the black box)
@@ -89,14 +104,15 @@ public class SearchTreeNode {
         //So time points will be the actions needed to rescue all of them and retrieve black box
         //that is, number of moves to rescue and move them to station and retrieve black box
         //manhattan distance to ship + manhattan distance to station + 2 time points for pickup and retrieval of black box
+
+
         HashMap<Coordinates, Integer> passengersInCoordinates = getState().getPassengersInCoordinates();
         if(getState().getPassengersInCoordinates().size()==0)
             //no more ships and no more black boxes
             return 0;//a goal node will have h=0
-
         //get the coordinate that has the maximum number of passengers
         Map.Entry <Coordinates, Integer> maxEntry = null;
-        for (Map.Entry<Coordinates, Integer> entry : passengersInCoordinates.entrySet())
+        for (Map.Entry<Coordinates, Integer> entry : getState().getPassengersInCoordinates().entrySet())
         {
             if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
             {
@@ -107,20 +123,63 @@ public class SearchTreeNode {
 
         Coordinates maxPassengersLocation = maxEntry.getKey();
         int maxPassengers = maxEntry.getValue();
-        Coordinates cgLocation = getState().getCoastGuardLocation();//get the cg coordinate
 
-        //get Manhattan Distance between location of passengers and cgLocation
-        int distanceToCoordinates = maxPassengersLocation.manhattanDistance(cgLocation);
 
-        //get minimum distance from coordinates to a station
-        double minDistanceToStation = Double.POSITIVE_INFINITY;
-        for(Coordinates c : getGrid().getStationsCoordinatesList())
-        {
-            if(c.manhattanDistance(maxPassengersLocation)<minDistanceToStation)
-                minDistanceToStation = c.manhattanDistance(maxPassengersLocation);
+        return Math.min(maxPassengers+1, costOfRescuingMaxShip(maxPassengersLocation));
+
+    }
+
+    public int costOfRescuingMaxShip(Coordinates maxPassengersLocation)
+    {
+        int capacity=grid.getPassengersMax() - this.getState().getNumberOfPassengersOnCG();
+        int heuristicValue;
+        Coordinates cgCoordinates = this.getState().getCoastGuardLocation();
+        if(capacity>0) {
+            Coordinates cgLocation = getState().getCoastGuardLocation();//get the cg coordinate
+
+            //get Manhattan Distance between location of passengers and cgLocation
+            int distanceToCoordinates = maxPassengersLocation.manhattanDistance(cgLocation);
+
+            //get minimum distance from coordinates to a station
+            double minDistanceToStation = Double.POSITIVE_INFINITY;
+            for (Coordinates c : getGrid().getStationsCoordinatesList()) {
+                if (c.manhattanDistance(maxPassengersLocation) < minDistanceToStation)
+                    minDistanceToStation = c.manhattanDistance(maxPassengersLocation);
+            }
+
+            //total needed distance to rescue this max ship is distance to reach ship + distance to reach nearest station
+            int totalDistanceToRescueMaxShip = (int) (distanceToCoordinates + minDistanceToStation) + 2;
+            int shipDeaths = 0;
+            for (Coordinates otherShipCoordinate : getState().getPassengersInCoordinates().keySet())//how many deaths will happen in otherShipCoordinate
+            {
+                if (maxPassengersLocation.equals(otherShipCoordinate))//if this other ship is equal to the ship I will rescue
+                {
+                    shipDeaths += maxPassengersLocation.manhattanDistance(this.getState().getCoastGuardLocation());
+                    continue;
+                }
+                shipDeaths += Math.min(this.getState().getPassengersInCoordinates().get(otherShipCoordinate),
+                        totalDistanceToRescueMaxShip);
+            }
+            return shipDeaths;
+        }
+        else{
+            // cg-
+            //HashMap<Coordinates, Integer> distancesToStations =(HashMap<Coordinates, Integer>) this.grid.getStationsCoordinatesList().clone();
+            HashSet<Coordinates> stationCoordinates= (HashSet<Coordinates>) this.getGrid().getStationsCoordinatesList().clone();
+            HashMap<Coordinates, Integer> distancesToStations=new HashMap<>();
+            for(Coordinates station:stationCoordinates){
+                distancesToStations.put(station,cgCoordinates.manhattanDistance(station));
+            }
+
+            //distancesToStations.replaceAll((stationCoordinate, v)->v=cgCoordinates.manhattanDistance(neareastStation(cgCoordinates)));
+
+            HashMap<Coordinates, Integer> deathsToStations = computeDeathsToReachStation(distancesToStations);
+
+            return Collections.min(deathsToStations.values());
         }
 
-        return Math.min(maxPassengers+1, distanceToCoordinates+(int)minDistanceToStation+2);
+
+
 
     }
     //20
@@ -135,7 +194,7 @@ public class SearchTreeNode {
         int heuristicValue;
         Coordinates cgCoordinates = this.getState().getCoastGuardLocation();
         if(capacity>0){
-            if(getState().getPassengersInCoordinates().size()==0 && getState().getNumberOfPassengersOnCG()==0)
+            if(getState().getPassengersInCoordinates().size()==0)
                 //no more ships and no more black boxes, no more passengers to drop
                 return 0;//a goal node will have h=0
 
@@ -146,7 +205,7 @@ public class SearchTreeNode {
             HashMap<Coordinates, Integer> distancesToRescueShips =(HashMap<Coordinates, Integer>) passengersInCoordinates.clone();
             distancesToRescueShips.replaceAll((shipCoordinate, v)->v=cgCoordinates.manhattanDistance(shipCoordinate) +
                     shipCoordinate.manhattanDistance(neareastStation(shipCoordinate)));
-            HashMap<Coordinates, Integer> deathsToRescueShip = computeDeathsToRescueShip(distancesToRescueShips);
+            HashMap<Coordinates, Integer> deathsToRescueShip = computeDeathsToRescueEachShip(distancesToRescueShips);
 
 
             HashMap<Coordinates, Integer> evaluateRescuingShips = (HashMap<Coordinates, Integer>) passengersInCoordinates.clone();
@@ -156,7 +215,7 @@ public class SearchTreeNode {
             evaluateRescuingShips.replaceAll((shipCoordinate, v)->v=deathsToRescueShip.get(shipCoordinate)-Math.min(v,capacity));
             //finding the ship with the best evaluation
 
-            Coordinates shipWithBestEvaluation=new Coordinates(0.0,0.0);
+            Coordinates shipWithBestEvaluation=new Coordinates(0,0);
             double minValue = Double.POSITIVE_INFINITY;
             for(Coordinates shipCoordinates: evaluateRescuingShips.keySet()) {
                 if (evaluateRescuingShips.get(shipCoordinates) < minValue) {
@@ -171,7 +230,7 @@ public class SearchTreeNode {
         else{
             // cg-
             //HashMap<Coordinates, Integer> distancesToStations =(HashMap<Coordinates, Integer>) this.grid.getStationsCoordinatesList().clone();
-            HashSet<Coordinates> stationCoordinates= (HashSet<Coordinates>) this.grid.getStationsCoordinatesList().clone();
+            HashSet<Coordinates> stationCoordinates= (HashSet<Coordinates>) this.getGrid().getStationsCoordinatesList().clone();
             HashMap<Coordinates, Integer> distancesToStations=new HashMap<>();
             for(Coordinates station:stationCoordinates){
                 distancesToStations.put(station,cgCoordinates.manhattanDistance(station));
@@ -196,6 +255,7 @@ public class SearchTreeNode {
         //  1
         //  1
     }
+
     public Coordinates neareastStation(Coordinates shipCoordinate)
     {
         HashSet<Coordinates> stationCoordinates = this.grid.getStationsCoordinatesList();
@@ -210,7 +270,7 @@ public class SearchTreeNode {
         return stationWithMinDistance;
 
     }
-    public HashMap<Coordinates,Integer> computeDeathsToRescueShip(HashMap<Coordinates, Integer> distancesToRescueShips)
+    public HashMap<Coordinates,Integer> computeDeathsToRescueEachShip(HashMap<Coordinates, Integer> distancesToRescueShips)
     {
         HashMap <Coordinates, Integer> deathsToRescueShips = new HashMap<>();
         for(Coordinates shipCoordinates: distancesToRescueShips.keySet())//ship coordinates is the one I will rescue
