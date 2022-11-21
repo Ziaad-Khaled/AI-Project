@@ -539,7 +539,7 @@ static class Checker{
 			byte cgCapacity = (byte) (maxPassengersInCG- passengersInCG);
 			if(cgCapacity >= passengersInShip) {
 				passengersInCG += passengersInShip;
-				coordinate_numberPassengers.replace(cg_x+","+cg_y, (byte)-100);//WHY -100
+				coordinate_numberPassengers.replace(cg_x+","+cg_y, (byte)-20);//WHY -100
 			}
 			else {
 				passengersInCG =maxPassengersInCG;
@@ -694,6 +694,8 @@ static class Checker{
 		System.out.println("Deaths Are: " + deaths);
 		System.out.println("retrievedBlackBoxes Should be: " + checker.retrievedBlackBoxes);
 		System.out.println("retrievedBlackBoxes Are: " + retrievedBlackBoxes);
+
+		System.out.println(checker.IsGoal());
 
 		return checker.IsGoal() && checker.deaths ==deaths && checker.retrievedBlackBoxes == retrievedBlackBoxes;
 	}

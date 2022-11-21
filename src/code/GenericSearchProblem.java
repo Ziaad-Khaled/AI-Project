@@ -28,6 +28,7 @@ public abstract class GenericSearchProblem {
                 return "failure";
 
             SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
+
             expandedNodes++;
 
             if(visualize)

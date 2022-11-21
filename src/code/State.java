@@ -146,12 +146,13 @@ public class State{
                 this.getblackBoxCountInCoordinates().equals(s.getblackBoxCountInCoordinates()) &&
                 this.getNumberOfPassengersOnCG() == s.getNumberOfPassengersOnCG() &&
                 this.getRetrieved() == s.getRetrieved() &&
-                this.getDeaths() == s.getDeaths();
+                this.getDeaths() == s.getDeaths() &&
+                this.getCoastGuardLocation().equals(s.getCoastGuardLocation());
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(getPassengersInCoordinates(),getblackBoxCountInCoordinates(), getNumberOfPassengersOnCG(),
-                getRetrieved(), getDeaths());
+                getRetrieved(), getDeaths(), getCoastGuardLocation());
     }
 }

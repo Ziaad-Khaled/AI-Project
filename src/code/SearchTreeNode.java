@@ -90,8 +90,8 @@ public class SearchTreeNode {
         //that is, number of moves to rescue and move them to station and retrieve black box
         //manhattan distance to ship + manhattan distance to station + 2 time points for pickup and retrieval of black box
         HashMap<Coordinates, Integer> passengersInCoordinates = getState().getPassengersInCoordinates();
-        if(getState().getPassengersInCoordinates().size()==0 && getState().getNumberOfPassengersOnCG()==0)
-            //no more ships and no more black boxes, no more passengers to drop
+        if(getState().getPassengersInCoordinates().size()==0)
+            //no more ships and no more black boxes
             return 0;//a goal node will have h=0
 
         //get the coordinate that has the maximum number of passengers
