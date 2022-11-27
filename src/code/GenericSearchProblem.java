@@ -1,8 +1,10 @@
 package code;
 
 
+import com.sun.management.OperatingSystemMXBean;
 import com.sun.source.tree.TreeVisitor;
 
+import java.lang.management.ManagementFactory;
 import java.util.*;
 
 public abstract class GenericSearchProblem {
@@ -15,6 +17,12 @@ public abstract class GenericSearchProblem {
     public abstract  ArrayList<SearchTreeNode> expandNode(SearchTreeNode parent, Grid grid, HashSet<State> uniqueStates);
 
     public String  solveBreadthFirstSearch(Grid grid, Boolean visualize, SearchTreeNode root) {
+        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+        Runtime runtime = Runtime.getRuntime();
+        // Run the garbage collector
+        runtime.gc();
+       // double maxprocesscpuload=osBean.getProcessCpuLoad();
+
         int expandedNodes = 0;
 
         PriorityQueue<SearchTreeNode> nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::getDepth));
@@ -24,6 +32,14 @@ public abstract class GenericSearchProblem {
         uniqueStates.add(root.getState());
         while(true)
         {
+
+
+            //System.out.println("Cpu Usage for the whole system in percent is " + osBean.getProcessCpuTime()/100000);
+            /*if(osBean.getProcessCpuLoad()>maxprocesscpuload)
+            {
+                maxprocesscpuload=osBean.getProcessCpuLoad();
+            }*/
+
             if(nodes.isEmpty())
                 return "failure";
 
@@ -34,6 +50,12 @@ public abstract class GenericSearchProblem {
             //check if n passes goal test
             if(goalTest(n.getState()))
             {
+                //System.out.println("Cpu Usage is " + osBean.getCpuLoad());
+                System.out.println("Cpu Usage Time in milliseconds is " + osBean.getProcessCpuTime()/1000000);
+                long memory = runtime.totalMemory() - runtime.freeMemory();
+                System.out.println("Used memory in bytes: " + memory);
+                System.out.println("Number of expanded Nodes = " + expandedNodes);
+
                 if(visualize)
                 {
                     Visualizer.visualizePathToGoalTest(n);
@@ -47,8 +69,12 @@ public abstract class GenericSearchProblem {
     }
 
     public String solveDepthFirstSearch(Grid grid, Boolean visualize, SearchTreeNode root) {
-        int expandedNodes = 0;
+        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+        Runtime runtime = Runtime.getRuntime();
+        // Run the garbage collector
+        runtime.gc();
 
+        int expandedNodes = 0;
         PriorityQueue<SearchTreeNode> nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::getDepth).reversed());
         //the higher the depth of the node, the higher the priority
         nodes.add(root);
@@ -56,6 +82,8 @@ public abstract class GenericSearchProblem {
         uniqueStates.add(root.getState());
         while(true)
         {
+
+
             if(nodes.isEmpty())
                 return "failure";
 
@@ -65,6 +93,10 @@ public abstract class GenericSearchProblem {
             //check if n passes goal test
             if(goalTest(n.getState()))
             {
+                System.out.println("Cpu Usage Time in milliseconds is " + osBean.getProcessCpuTime()/1000000);
+                long memory = runtime.totalMemory() - runtime.freeMemory();
+                System.out.println("Used memory in bytes: " + memory);
+                System.out.println("Number of expanded Nodes = " + expandedNodes);
                 if(visualize)
                 {
                     Visualizer.visualizePathToGoalTest(n);
@@ -78,6 +110,12 @@ public abstract class GenericSearchProblem {
     }
 
     public String solveIterativeDeepeningSearch(Grid grid, Boolean visualize, SearchTreeNode root) {
+        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+        Runtime runtime = Runtime.getRuntime();
+        // Run the garbage collector
+        runtime.gc();
+
+
         int expandedNodes = 0;
 
         PriorityQueue<SearchTreeNode> nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::getDepth).reversed());
@@ -104,6 +142,11 @@ public abstract class GenericSearchProblem {
             //check if n passes goal test
             if(goalTest(n.getState()))
             {
+                System.out.println("Cpu Usage Time in milliseconds is " + osBean.getProcessCpuTime()/1000000);
+                long memory = runtime.totalMemory() - runtime.freeMemory();
+                System.out.println("Used memory in bytes: " + memory);
+                System.out.println("Number of expanded Nodes = " + expandedNodes);
+
                 if(visualize)
                 {
                     Visualizer.visualizePathToGoalTest(n);
@@ -121,6 +164,12 @@ public abstract class GenericSearchProblem {
     }
 
     public String solveGreedySearch(Grid grid, Boolean visualize, SearchTreeNode root, int i) {
+        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+        Runtime runtime = Runtime.getRuntime();
+        // Run the garbage collector
+        runtime.gc();
+
+
         int expandedNodes = 0;
         PriorityQueue<SearchTreeNode> nodes = null;
 
@@ -129,6 +178,8 @@ public abstract class GenericSearchProblem {
         else if (i==2) {
             nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::heuristic2));
         }
+
+
         else return "i must be 1 or 2";
         //the less the depth of the node, the higher the priority
 
@@ -137,6 +188,7 @@ public abstract class GenericSearchProblem {
         uniqueStates.add(root.getState());
         while(true)
         {
+
             if(nodes.isEmpty())
                 return "failure";
 
@@ -145,6 +197,11 @@ public abstract class GenericSearchProblem {
             //check if n passes goal test
             if(goalTest(n.getState()))
             {
+                System.out.println("Cpu Usage Time in milliseconds is " + osBean.getProcessCpuTime()/1000000);
+                long memory = runtime.totalMemory() - runtime.freeMemory();
+                System.out.println("Used memory in bytes: " + memory);
+                System.out.println("Number of expanded Nodes = " + expandedNodes);
+
                 if(visualize)
                 {
                     Visualizer.visualizePathToGoalTest(n);
@@ -159,6 +216,12 @@ public abstract class GenericSearchProblem {
     }
 
     public String solveAStarSearch(Grid grid, Boolean visualize, SearchTreeNode root, int i) {
+        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+        Runtime runtime = Runtime.getRuntime();
+        // Run the garbage collector
+        runtime.gc();
+
+
         int expandedNodes = 0;
 
         PriorityQueue<SearchTreeNode> nodes = null;
@@ -175,6 +238,8 @@ public abstract class GenericSearchProblem {
         uniqueStates.add(root.getState());
         while(true)
         {
+
+
             if(nodes.isEmpty())
                 return "failure";
 
@@ -183,6 +248,11 @@ public abstract class GenericSearchProblem {
             //check if n passes goal test
             if(goalTest(n.getState()))
             {
+                System.out.println("Cpu Usage Time in milliseconds is " + osBean.getProcessCpuTime()/1000000);
+                long memory = runtime.totalMemory() - runtime.freeMemory();
+                System.out.println("Used memory in bytes: " + memory);
+                System.out.println("Number of expanded Nodes = " + expandedNodes);
+
                 if(visualize)
                 {
                     Visualizer.visualizePathToGoalTest(n);

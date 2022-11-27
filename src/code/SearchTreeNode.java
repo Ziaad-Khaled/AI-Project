@@ -89,7 +89,7 @@ public class SearchTreeNode {
 //        Coordinates cgCoordinates = this.getState().getCoastGuardLocation();
 //        HashMap<Coordinates, Integer> distancesToRescueShips =(HashMap<Coordinates, Integer>) passengersInCoordinates.clone();
 //        distancesToRescueShips.replaceAll((shipCoordinate, v)->v=cgCoordinates.manhattanDistance(shipCoordinate) +
-//                shipCoordinate.manhattanDistance(neareastStation(shipCoordinate)));
+//                shipCoordinate.manhattanDistance( neareastStation (shipCoordinate) ) );
 //        HashMap<Coordinates, Integer> deathsToRescueShip = computeDeathsToRescueShip(distancesToRescueShips);
 //
 //
