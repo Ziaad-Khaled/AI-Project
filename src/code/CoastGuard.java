@@ -231,9 +231,9 @@ public class CoastGuard extends GenericSearchProblem {
         HashMap<Coordinates, Integer> blackBoxCounterInCoordinates = parent.getState().getblackBoxCountInCoordinates();
 
 
-        //check that the cg is in the same location as a ship, it has no passengers
+        //check that the cg is in the same location as a ship, it has no passengers and the black box counter in previous state is less than 19
         if(passengersInCoordinates.containsKey(cgCoordinates) && passengersInCoordinates.get(cgCoordinates) == 0
-            && blackBoxCounterInCoordinates.get(cgCoordinates)<20)
+            && blackBoxCounterInCoordinates.get(cgCoordinates)<19)
             return true;
         return false;
     }
