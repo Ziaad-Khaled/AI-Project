@@ -14,7 +14,7 @@ public class Main {
 
 
         String grid5 = "5,5;69;3,3;0,0,0,1,1,0;0,3,78,1,2,2,1,3,14,4,4,9;";
-        String solution = CoastGuard.solve(grid5, "AS1", false);
+        String solution = CoastGuard.solve(grid5, "BF", false);
 
 
     }
