@@ -81,52 +81,53 @@ public class SearchTreeNode {
 
     public int heuristic1()
     {
-
-//        if(getState().getPassengersInCoordinates().size()==0)
-//            //no more ships and no more black boxes
-//            return 0;//a goal node will have h=0
-//        HashMap<Coordinates, Integer> passengersInCoordinates = getState().getPassengersInCoordinates();
-//        Coordinates cgCoordinates = this.getState().getCoastGuardLocation();
-//        HashMap<Coordinates, Integer> distancesToRescueShips =(HashMap<Coordinates, Integer>) passengersInCoordinates.clone();
-//        distancesToRescueShips.replaceAll((shipCoordinate, v)->v=cgCoordinates.manhattanDistance(shipCoordinate) +
-//                shipCoordinate.manhattanDistance( neareastStation (shipCoordinate) ) );
-//        HashMap<Coordinates, Integer> deathsToRescueShip = computeDeathsToRescueShip(distancesToRescueShips);
-//
-//
-//        return Collections.min(deathsToRescueShip.values());
-
-
-
         //heuristic is the minimum of two situations:
-        //Situation 1: the ship with the maximum number of passengers will sink, all passengers will sink
-        //So time points (depth to the goal) will be number of passengers + 1 (lower bound to retrieve black box of the black box)
+        //Situation 1: the ship with the maximum number of passengers will sink, all passengers will sink and we will not retrieve black box
+        //So cost will be number of passengers + 1 (blackbox not retrieved)
         //Situation 2: The ship with the max number of passengers will be rescued and the black box will be retrieved
-        //So time points will be the actions needed to rescue all of them and retrieve black box
-        //that is, number of moves to rescue and move them to station and retrieve black box
-        //manhattan distance to ship + manhattan distance to station + 2 time points for pickup and retrieval of black box
+        //So till we reach the ship, number of passengers who will die is the manhattan distance
 
 
-        HashMap<Coordinates, Integer> passengersInCoordinates = getState().getPassengersInCoordinates();
-        if(getState().getPassengersInCoordinates().size()==0)
-            //no more ships and no more black boxes
-            return 0;//a goal node will have h=0
-        //get the coordinate that has the maximum number of passengers
-        Map.Entry <Coordinates, Integer> maxEntry = null;
-        for (Map.Entry<Coordinates, Integer> entry : getState().getPassengersInCoordinates().entrySet())
-        {
-            if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+        HashMap<Coordinates,Integer> passengersInCoordinates = getState().getPassengersInCoordinates();
+        HashMap<Coordinates,Integer> blackBoxCountInCoordinates = getState().getblackBoxCountInCoordinates();
+
+        if(passengersInCoordinates.isEmpty())
+            return 0;
+
+        boolean noMorePassengers = true;
+        for(Coordinates ship : passengersInCoordinates.keySet())
+            if(passengersInCoordinates.get(ship)>0)
             {
-                maxEntry = entry;
+                noMorePassengers = false;break;
             }
+
+        if(noMorePassengers)
+        {
+          int nonRetreivableBlackBoxes = 0;
+          for(Coordinates ship: blackBoxCountInCoordinates.keySet())
+              if(getState().getCoastGuardLocation().manhattanDistance(ship)>blackBoxCountInCoordinates.get(ship))
+                  nonRetreivableBlackBoxes++;
+          return nonRetreivableBlackBoxes;
         }
+        else {
+            //get the coordinate that has the maximum number of passengers
+            Map.Entry<Coordinates, Integer> maxEntry = null;
+            for (Map.Entry<Coordinates, Integer> entry : passengersInCoordinates.entrySet()) {
+                if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
+                    maxEntry = entry;
+                }
+            }
+            Coordinates maxPassengersLocation = maxEntry.getKey();
+            int maxPassengers = maxEntry.getValue();
+            Coordinates cgLocation = getState().getCoastGuardLocation();//get the cg coordinate
+
+            //get Manhattan Distance between location of passengers and cgLocation
+            int distanceToCoordinates = maxPassengersLocation.manhattanDistance(cgLocation);
 
 
-        Coordinates maxPassengersLocation = maxEntry.getKey();
-        int maxPassengers = maxEntry.getValue();
 
-
-        return Math.min(maxPassengers+1, costOfRescuingMaxShip(maxPassengersLocation));
-
+            return Math.min(maxPassengers + 1, distanceToCoordinates);
+        }
     }
 
     public int costOfRescuingMaxShip(Coordinates maxPassengersLocation)
@@ -211,8 +212,8 @@ public class SearchTreeNode {
             HashMap<Coordinates, Integer> evaluateRescuingShips = (HashMap<Coordinates, Integer>) passengersInCoordinates.clone();
             // Free capacity on coastguard
 
-            // evaluating each ship= number of passengers that are can be rescued on the ship - deaths so far to rescue it
-            evaluateRescuingShips.replaceAll((shipCoordinate, v)->v=deathsToRescueShip.get(shipCoordinate)-Math.min(v,capacity));
+            // evaluating each ship= number of passengers that can be rescued on the ship - deaths so far to rescue it
+            evaluateRescuingShips.replaceAll((shipCoordinate, v)->v=deathsToRescueShip.get(shipCoordinate)-Math.min(v-cgCoordinates.manhattanDistance(shipCoordinate),capacity));
             //finding the ship with the best evaluation
 
             Coordinates shipWithBestEvaluation=new Coordinates(0,0);
@@ -244,16 +245,7 @@ public class SearchTreeNode {
         }
 
         return heuristicValue;
-        //min ship
-        //no:       4  17  19
-        //distance:    1 1
-        //compute deaths/0  compute deaths/3  compute deaths/5
-        //[min-min,,,,,,,max]
-        //[]
-        //1-4=-3
-        //  4
-        //  1
-        //  1
+
     }
 
     public Coordinates neareastStation(Coordinates shipCoordinate)
