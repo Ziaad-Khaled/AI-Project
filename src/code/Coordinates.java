@@ -30,7 +30,7 @@ public class Coordinates extends Point2D {
 
 	public int manhattanDistance(Coordinates c)
 	{
-		return (int) Math.abs((this.getX() - c.getX()) + (this.getY() - c.getY()));
+		return (int) (Math.abs(this.getX() - c.getX()) + Math.abs(this.getY() - c.getY()));
 	}
 	public String toString()
 	{

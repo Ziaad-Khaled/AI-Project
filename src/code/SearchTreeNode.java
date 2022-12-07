@@ -283,7 +283,9 @@ public class SearchTreeNode {
             }
             deathsToRescueShips.put(shipCoordinates, shipDeaths);
         }
-        System.out.println(deathsToRescueShips.toString());
+//        System.out.println(getState().getCoastGuardLocation());
+//        System.out.println(distancesToRescueShips.toString());
+//        System.out.println(deathsToRescueShips.toString());
         return  deathsToRescueShips;
     }
 

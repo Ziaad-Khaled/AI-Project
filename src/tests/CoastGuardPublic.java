@@ -16,7 +16,7 @@ import code.CoastGuard;
 
 public class CoastGuardPublic {
 
-	String grid0 = "4,5;97;1,2;0,1;3,2,65;";
+	String grid0 = "5,6;50;0,1;0,4,3,3;1,1,90;";
 	String grid1 = "6,6;52;2,0;2,4,4,0,5,4;2,1,19,4,2,6,5,0,8;";
 	String grid2 = "7,5;40;2,3;3,6;1,1,10,4,5,90;";
 	String grid3 = "8,5;60;4,6;2,7;3,4,37,3,5,93,4,0,40;";
@@ -433,7 +433,7 @@ public class CoastGuardPublic {
 
 	@Test(timeout = 10000)
 	public void testh0() throws Exception {
-		String solution = CoastGuard.solve(grid0, "AS2", true);
+		String solution = CoastGuard.solve(grid0, "AS2", false);
 		solution = solution.replace(" ", "");
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
