@@ -228,6 +228,7 @@ public class SearchTreeNode {
             //heuristic is no. of deaths to rescue ship with best evaluation
              heuristicValue = deathsToRescueShip.get(shipWithBestEvaluation);
 
+
         }
         else{
             // cg-
@@ -244,6 +245,7 @@ public class SearchTreeNode {
 
             heuristicValue=Collections.min(deathsToStations.values());
         }
+
 
         return heuristicValue;
 
@@ -281,6 +283,7 @@ public class SearchTreeNode {
             }
             deathsToRescueShips.put(shipCoordinates, shipDeaths);
         }
+        System.out.println(deathsToRescueShips.toString());
         return  deathsToRescueShips;
     }
 

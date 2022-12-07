@@ -16,7 +16,7 @@ public class Visualizer {
 
         for(int i=0;i<node.getGrid().getHeight();i++)
         {
-            System.out.print((i+1) + ": ");
+            System.out.print((i) + ": ");
             for(int j=0;j< node.getGrid().getWidth();j++)
             {
                 Coordinates cellCoordinate = new Coordinates(i,j);
@@ -80,19 +80,19 @@ public class Visualizer {
 
         for(int i=0;i<passengersInCoordinates.size();i++)
         {
-            System.out.println("Number of passengers at ship " + (i+1) + " is: " + passengersInCoordinates.get(i));
+            System.out.println("Number of passengers at ship " + (i) + " is: " + passengersInCoordinates.get(i));
         }
 
         for(int i=0;i<blackBoxCounterInCoordinates.size();i++)
         {
-            System.out.println("The counter at blackbox " + (i+1) + " is: " + blackBoxCounterInCoordinates.get(i));
+            System.out.println("The counter at blackbox " + (i) + " is: " + blackBoxCounterInCoordinates.get(i));
         }
         System.out.println("Maximum number on coast guard: " + node.getGrid().getPassengersMax());
     }
 
     private static void visualizeFirstRow(int nodeWidth) {
         System.out.print("   ");
-        for(int i=1;i<=nodeWidth;i++)
+        for(int i=0;i<nodeWidth;i++)
         {
             System.out.print("  "+ i+ "   | ");
         }
