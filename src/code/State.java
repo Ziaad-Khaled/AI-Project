@@ -84,9 +84,10 @@ public class State{
         return blackBoxCounterInCoordinates;
     }
 
-    public int preformATimeStep(){
+    public Pair preformATimeStep(){
 
-        int cost = 0; //the cost represents the number of passengers who died as we are performing the action
+        int deaths = 0; //number of passengers who died as we are performing the action
+        int expiredBlackBoxes = 0; //number of black boxes that expired as we are performing the action
         //and the number of ships whose black boxes are no longer retrievable
 
         //iterate over the number of passengers on every ship
@@ -97,7 +98,7 @@ public class State{
             {
                 set.setValue(set.getValue()- 1);
                 //increment the cost
-                cost++;
+                deaths++;
                 //increment the number of deaths till this state
                 setDeaths(getDeaths()+1);
             }
@@ -115,7 +116,7 @@ public class State{
                     //remove the ship from both hashmaps
                     if(oldValue+1 == 20)
                     {
-                        cost++;
+                        expiredBlackBoxes++;
                         //it will be difficult to remove the keys inside the loop (will result in errors)
                         //so assign to a specific value=1000 and after the loops we filter on this value and remove it
                         blackBoxCounterInCoordinates.put(set.getKey(),1000);
@@ -129,7 +130,7 @@ public class State{
         blackBoxCounterInCoordinates.values().removeIf(value -> value == 1000);
         passengersInCoordinates.values().removeIf(value -> value == 1000);
 
-        return cost;
+        return new Pair(deaths,expiredBlackBoxes);
     }
 
     public String toString()

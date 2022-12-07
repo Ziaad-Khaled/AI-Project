@@ -76,7 +76,7 @@ public class CoastGuard extends GenericSearchProblem {
         Grid gridObject = createGridFromString(grid);
         State initialState = new State(gridObject.getCoastGuardLocation(),gridObject.getPassengersInCoordinates(),
                 gridObject.getBlackBoxCounterInCoordinates(),0, 0, 0);
-        SearchTreeNode root = new SearchTreeNode(null,new ArrayList<>(),0,initialState, gridObject);
+        SearchTreeNode root = new SearchTreeNode(null,new ArrayList<>(),new Pair(0,0),initialState, gridObject);
         String solution;
         CoastGuard p = new CoastGuard();
         switch(strategy)
@@ -86,6 +86,9 @@ public class CoastGuard extends GenericSearchProblem {
                 break;
             case "DF":
                 solution = p.solveDepthFirstSearch(gridObject, visualize, root);
+                break;
+            case "UC":
+                solution = p.solveUniformCostSearch(gridObject, visualize, root);
                 break;
             case "ID":
                 solution = p.solveIterativeDeepeningSearch(gridObject, visualize, root);
@@ -280,10 +283,12 @@ public class CoastGuard extends GenericSearchProblem {
         State newState = new State(cgLocation, passengers, blackBox, numberOfPassengersOnCG + passengersRescued, parent.getState().getDeaths(), parent.getState().getRetrieved());
 
         //decrement all the passengers who died and increment all the black boxes count if no passengers exist
-        int cost = newState.preformATimeStep();
+        Pair deathsAndExpBlackBoxes = newState.preformATimeStep();
         //cost represents the number of passengers who died + number of black boxes which became non-retrievable in this time step
 
-        SearchTreeNode childNode = new SearchTreeNode(parent, parent.getActionsSequence(), parent.getPathCost()+cost , newState);
+        SearchTreeNode childNode = new SearchTreeNode(parent, parent.getActionsSequence(),
+                new Pair(parent.getPathCost().deaths+deathsAndExpBlackBoxes.deaths, parent.getPathCost().expiredBlackBoxes+deathsAndExpBlackBoxes.expiredBlackBoxes )
+                , newState);
         //add this action to the sequence of actions from the root till this node
         childNode.addAction("pickup");
         if(uniqueStates.contains(newState))
@@ -302,11 +307,12 @@ public class CoastGuard extends GenericSearchProblem {
         State newState = new State(cgLocation, passengers, blackBox, 0, parent.getState().getDeaths(), parent.getState().getRetrieved());
 
         //decrement all the passengers who died and increment all the black boxes count if no passengers exist in their ships
-        int cost = newState.preformATimeStep();
+        Pair deathsAndExpBlackBoxes = newState.preformATimeStep();
         //cost represents the number of passengers who died + number of black boxes which became non-retrievable in this time step
 
-        SearchTreeNode childNode = new SearchTreeNode(parent, parent.getActionsSequence(), parent.getPathCost()+cost , newState);
-        //add this action to the sequence of actions from the root till this node
+        SearchTreeNode childNode = new SearchTreeNode(parent, parent.getActionsSequence(),
+                new Pair(parent.getPathCost().deaths+deathsAndExpBlackBoxes.deaths, parent.getPathCost().expiredBlackBoxes+deathsAndExpBlackBoxes.expiredBlackBoxes )
+                , newState);        //add this action to the sequence of actions from the root till this node
         childNode.addAction("drop");
         if(uniqueStates.contains(newState))
             return null;
@@ -328,14 +334,15 @@ public class CoastGuard extends GenericSearchProblem {
         //same state but with the ship information removed from the state
         State newState = new State(cgLocation, passengers, blackBox, numberOfPassengersOnCG, parent.getState().getDeaths(), parent.getState().getRetrieved());
         //decrement all the passengers who died and increment all the black boxes count if no passengers exist in their ships
-        int cost = newState.preformATimeStep();
+        Pair deathsAndExpBlackBoxes = newState.preformATimeStep();
         //cost represents the number of passengers who died + number of black boxes which became non-retrievable in this time step
 
         //increase the number of retrieved boxes till this state
         newState.setRetrieved(newState.getRetrieved()+1);
 
-        SearchTreeNode childNode = new SearchTreeNode(parent, parent.getActionsSequence(), parent.getPathCost()+cost , newState);
-        //add this action to the sequence of actions from the root till this node
+        SearchTreeNode childNode = new SearchTreeNode(parent, parent.getActionsSequence(),
+                new Pair(parent.getPathCost().deaths+deathsAndExpBlackBoxes.deaths, parent.getPathCost().expiredBlackBoxes+deathsAndExpBlackBoxes.expiredBlackBoxes )
+                , newState);        //add this action to the sequence of actions from the root till this node        //add this action to the sequence of actions from the root till this node
         childNode.addAction("retrieve");
         if(uniqueStates.contains(newState))
             return null;
@@ -353,7 +360,7 @@ public class CoastGuard extends GenericSearchProblem {
 
 
         State newState = new State(cg, passengers, blackBox, numberOfPassengersOnCG, parent.getState().getDeaths(), parent.getState().getRetrieved());
-        int cost = newState.preformATimeStep();
+        Pair deathsAndExpBlackBoxes = newState.preformATimeStep();
 
         String action = "";
         switch (direction){
@@ -377,13 +384,15 @@ public class CoastGuard extends GenericSearchProblem {
                 break;
         }
 
-        SearchTreeNode child = new SearchTreeNode(parent, parent.getActionsSequence(), cost + parent.getPathCost(), newState);
+        SearchTreeNode childNode = new SearchTreeNode(parent, parent.getActionsSequence(),
+                new Pair(parent.getPathCost().deaths+deathsAndExpBlackBoxes.deaths, parent.getPathCost().expiredBlackBoxes+deathsAndExpBlackBoxes.expiredBlackBoxes )
+                , newState);        //add this action to the sequence of actions from the root till this node        //add this action to the sequence of actions from the root till this node
         //add this action to the sequence of actions from the root till this node
-        child.addAction(action);
+        childNode.addAction(action);
         if(uniqueStates.contains(newState))
             return null;
         uniqueStates.add(newState);
-        return child;
+        return childNode;
     }
 
     @Override
@@ -396,7 +405,7 @@ public class CoastGuard extends GenericSearchProblem {
     }
 
     @Override
-    public int pathCost(SearchTreeNode n) {
+    public Pair pathCost(SearchTreeNode n) {
         //check the number of killed passengers and the number of expired black b oxes since the root node
         return n.getPathCost();
     }

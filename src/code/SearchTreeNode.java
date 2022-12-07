@@ -2,6 +2,7 @@ package code;
 
 import java.util.*;
 
+
 public class SearchTreeNode {
 
     private SearchTreeNode parent;//map every action to a new node
@@ -11,7 +12,7 @@ public class SearchTreeNode {
     }
 
     private ArrayList<String> actionsSequence;//sequence of actions from the root till this node
-    private int pathCost;//the number of passengers who sinked + the number of black boxes that expired till this state
+    private Pair pathCost;//the number of passengers who sinked + the number of black boxes that expired till this state
 
     private State state;
 
@@ -21,7 +22,7 @@ public class SearchTreeNode {
 
 //    String operator;
 //    //children??
-    public SearchTreeNode(SearchTreeNode parent, ArrayList<String> actionsSequence, int pathCost, State state)
+    public SearchTreeNode(SearchTreeNode parent, ArrayList<String> actionsSequence, Pair pathCost, State state)
     {
         this.parent=parent;
         this.actionsSequence= (ArrayList<String>) actionsSequence.clone();
@@ -29,7 +30,7 @@ public class SearchTreeNode {
         this.state=state;
         this.grid = parent.grid;
     }
-    public SearchTreeNode(SearchTreeNode parent, ArrayList<String> actionsSequence, int pathCost, State state, Grid grid)
+    public SearchTreeNode(SearchTreeNode parent, ArrayList<String> actionsSequence, Pair pathCost, State state, Grid grid)
     {
         this.parent=parent;
         this.actionsSequence= (ArrayList<String>) actionsSequence.clone();
@@ -63,11 +64,11 @@ public class SearchTreeNode {
         actionsSequence.add(action);
     }
 
-    public int getPathCost() {
+    public Pair getPathCost() {
         return pathCost;
     }
 
-    public void setPathCost(int pathCost) {
+    public void setPathCost(Pair pathCost) {
         this.pathCost = pathCost;
     }
 
@@ -94,22 +95,22 @@ public class SearchTreeNode {
         if(passengersInCoordinates.isEmpty())
             return 0;
 
-        boolean noMorePassengers = true;
-        for(Coordinates ship : passengersInCoordinates.keySet())
-            if(passengersInCoordinates.get(ship)>0)
-            {
-                noMorePassengers = false;break;
-            }
-
-        if(noMorePassengers)
-        {
-          int nonRetreivableBlackBoxes = 0;
-          for(Coordinates ship: blackBoxCountInCoordinates.keySet())
-              if(getState().getCoastGuardLocation().manhattanDistance(ship)>blackBoxCountInCoordinates.get(ship))
-                  nonRetreivableBlackBoxes++;
-          return nonRetreivableBlackBoxes;
-        }
-        else {
+//        boolean noMorePassengers = true;
+//        for(Coordinates ship : passengersInCoordinates.keySet())
+//            if(passengersInCoordinates.get(ship)>0)
+//            {
+//                noMorePassengers = false;break;
+//            }
+//
+//        if(noMorePassengers)
+//        {
+//          int nonRetreivableBlackBoxes = 0;
+//          for(Coordinates ship: blackBoxCountInCoordinates.keySet())
+//              if(getState().getCoastGuardLocation().manhattanDistance(ship)>20-blackBoxCountInCoordinates.get(ship))
+//                  nonRetreivableBlackBoxes++;
+//          return nonRetreivableBlackBoxes;
+//        }
+//        else {
             //get the coordinate that has the maximum number of passengers
             Map.Entry<Coordinates, Integer> maxEntry = null;
             for (Map.Entry<Coordinates, Integer> entry : passengersInCoordinates.entrySet()) {
@@ -126,8 +127,8 @@ public class SearchTreeNode {
 
 
 
-            return Math.min(maxPassengers + 1, distanceToCoordinates);
-        }
+            return Math.min(maxPassengers, distanceToCoordinates);
+//        }
     }
 
     public int costOfRescuingMaxShip(Coordinates maxPassengersLocation)
@@ -204,8 +205,8 @@ public class SearchTreeNode {
 //        HashMap<Coordinates, Integer> ManhattanToCoordinates = (HashMap<Coordinates, Integer>) passengersInCoordinates.clone();
 //        ManhattanToCoordinates.replaceAll( (k,v)->v=k.manhattanDistance(cgCoordinates));
             HashMap<Coordinates, Integer> distancesToRescueShips =(HashMap<Coordinates, Integer>) passengersInCoordinates.clone();
-            distancesToRescueShips.replaceAll((shipCoordinate, v)->v=cgCoordinates.manhattanDistance(shipCoordinate) +
-                    shipCoordinate.manhattanDistance(neareastStation(shipCoordinate)));
+            distancesToRescueShips.replaceAll((shipCoordinate, v)->v=cgCoordinates.manhattanDistance(shipCoordinate));
+//                    + shipCoordinate.manhattanDistance(neareastStation(shipCoordinate)));
             HashMap<Coordinates, Integer> deathsToRescueShip = computeDeathsToRescueEachShip(distancesToRescueShips);
 
 
@@ -276,7 +277,7 @@ public class SearchTreeNode {
                     continue;
                 }
                 shipDeaths+= Math.min(this.getState().getPassengersInCoordinates().get(otherShipCoordinate),
-                        distancesToRescueShips.get(shipCoordinates));
+                         distancesToRescueShips.get(shipCoordinates));
             }
             deathsToRescueShips.put(shipCoordinates, shipDeaths);
         }
@@ -300,13 +301,13 @@ public class SearchTreeNode {
     }
 
 
-    public int AStarWithH1()
+    public Pair AStarWithH1()
     {
-        return  heuristic1() + getPathCost();
+        return new Pair(getPathCost().deaths + heuristic1(), getPathCost().expiredBlackBoxes);
     }
-    public int AStarWithH2()
+    public Pair AStarWithH2()
     {
-        return  heuristic2() + getPathCost();
+        return new Pair(getPathCost().deaths + heuristic2(), getPathCost().expiredBlackBoxes);
     }
 
     @Override
@@ -316,4 +317,27 @@ public class SearchTreeNode {
 
 
 
+}
+
+class Pair implements Comparable {
+    int deaths;
+    int expiredBlackBoxes;
+    public Pair(int deaths, int expiredBlackBoxes)
+    {
+        this.deaths=deaths;
+        this.expiredBlackBoxes=expiredBlackBoxes;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if(this.deaths==((Pair)o).deaths)
+            return Integer.compare(this.expiredBlackBoxes, ((Pair) o).expiredBlackBoxes);
+        return Integer.compare(this.deaths, ((Pair) o).deaths);
+
+    }
+
+    @Override
+    public String toString() {
+        return "Deaths: " + deaths + " Expired Black Boxes: " + expiredBlackBoxes ;
+    }
 }

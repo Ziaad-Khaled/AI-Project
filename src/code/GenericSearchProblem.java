@@ -64,6 +64,7 @@ public abstract class GenericSearchProblem {
                 {
                     Visualizer.visualizePathToGoalTest(n);
                 }
+                System.out.println("BFS Path cost" + n.getPathCost());
                 return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
             }
             ArrayList children = expandNode(n,grid, uniqueStates);
@@ -100,7 +101,55 @@ public abstract class GenericSearchProblem {
                 {
                     Visualizer.visualizePathToGoalTest(n);
                 }
+                System.out.println("DFS Path cost" + n.getPathCost());
                 return "" +  Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
+            }
+            ArrayList children = expandNode(n,grid, uniqueStates);
+            nodes.addAll(children);
+
+        }
+    }
+    public String  solveUniformCostSearch(Grid grid, Boolean visualize, SearchTreeNode root) {
+
+        // double maxprocesscpuload=osBean.getProcessCpuLoad();
+
+        int expandedNodes = 0;
+
+        PriorityQueue<SearchTreeNode> nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::getPathCost));
+        //the less the depth of the node, the higher the priority
+        nodes.add(root);
+        HashSet<State> uniqueStates = new HashSet<>();
+        uniqueStates.add(root.getState());
+        while(true)
+        {
+
+
+            //System.out.println("Cpu Usage for the whole system in percent is " + osBean.getProcessCpuTime()/100000);
+            /*if(osBean.getProcessCpuLoad()>maxprocesscpuload)
+            {
+                maxprocesscpuload=osBean.getProcessCpuLoad();
+            }*/
+
+            if(nodes.isEmpty())
+                return "failure";
+
+            SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
+
+            expandedNodes++;
+
+            //check if n passes goal test
+            if(goalTest(n.getState()))
+            {
+                //System.out.println("Cpu Usage is " + osBean.getCpuLoad());
+                compute();
+                System.out.println("Number of expanded Nodes = " + expandedNodes);
+
+                if(visualize)
+                {
+                    Visualizer.visualizePathToGoalTest(n);
+                }
+                System.out.println("UC Path cost" + n.getPathCost());
+                return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
             }
             ArrayList children = expandNode(n,grid, uniqueStates);
             nodes.addAll(children);
@@ -145,6 +194,7 @@ public abstract class GenericSearchProblem {
                 {
                     Visualizer.visualizePathToGoalTest(n);
                 }
+                System.out.println("IDS Path cost" + n.getPathCost());
                 return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
             }
             if(n.getDepth()<maxLevel)
@@ -195,6 +245,11 @@ public abstract class GenericSearchProblem {
                 {
                     Visualizer.visualizePathToGoalTest(n);
                 }
+                if(i==1)
+                    System.out.println("GR1 Path cost" + n.getPathCost());
+                if(i==2)
+                    System.out.println("GR2 Path cost" + n.getPathCost());
+
                 return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
             }
             ArrayList children = expandNode(n,grid, uniqueStates);
@@ -241,6 +296,11 @@ public abstract class GenericSearchProblem {
                 {
                     Visualizer.visualizePathToGoalTest(n);
                 }
+                if(i==1)
+                    System.out.println("AS1 Path cost" + n.getPathCost());
+                if(i==2)
+                    System.out.println("AS2 Path cost" + n.getPathCost());
+
                 return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
             }
 
@@ -251,7 +311,7 @@ public abstract class GenericSearchProblem {
     }
     public abstract boolean goalTest(State s);
 
-    public abstract int pathCost(SearchTreeNode n);
+    public abstract Pair pathCost(SearchTreeNode n);
 
 
 }

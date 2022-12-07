@@ -687,8 +687,7 @@ static class Checker{
 				return false;
 				}
 	}
-		
-	
+		System.out.println(Arrays.toString(actions));
 		return s.cool() && s.d==blue && s.r==doors;
 	}
 }
