@@ -338,6 +338,6 @@ class Pair implements Comparable {
 
     @Override
     public String toString() {
-        return "Deaths: " + deaths + " Expired Black Boxes: " + expiredBlackBoxes ;
+        return " Deaths: " + deaths + " Expired Black Boxes: " + expiredBlackBoxes ;
     }
 }

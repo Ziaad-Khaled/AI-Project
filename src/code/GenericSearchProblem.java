@@ -122,20 +122,20 @@ public abstract class GenericSearchProblem {
         uniqueStates.add(root.getState());
         while(true)
         {
-
-
-            //System.out.println("Cpu Usage for the whole system in percent is " + osBean.getProcessCpuTime()/100000);
-            /*if(osBean.getProcessCpuLoad()>maxprocesscpuload)
-            {
-                maxprocesscpuload=osBean.getProcessCpuLoad();
-            }*/
-
             if(nodes.isEmpty())
                 return "failure";
 
             SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
 
+
+
             expandedNodes++;
+
+            if(visualize)
+            {
+                System.out.println("node number: " + expandedNodes);
+                Visualizer.visualizeNode(n);
+            }
 
             //check if n passes goal test
             if(goalTest(n.getState()))
@@ -143,11 +143,11 @@ public abstract class GenericSearchProblem {
                 //System.out.println("Cpu Usage is " + osBean.getCpuLoad());
                 compute();
                 System.out.println("Number of expanded Nodes = " + expandedNodes);
-
-                if(visualize)
-                {
-                    Visualizer.visualizePathToGoalTest(n);
-                }
+//
+//                if(visualize)
+//                {
+//                    Visualizer.visualizePathToGoalTest(n);
+//                }
                 System.out.println("UC Path cost" + n.getPathCost());
                 return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
             }
@@ -156,7 +156,6 @@ public abstract class GenericSearchProblem {
 
         }
     }
-
     public String solveIterativeDeepeningSearch(Grid grid, Boolean visualize, SearchTreeNode root) {
 
 
@@ -286,16 +285,27 @@ public abstract class GenericSearchProblem {
 
             SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
 
+
+            if(visualize)
+            {
+                System.out.println("node number: " + expandedNodes);
+                System.out.println("n.AStarWithH2() " + n.AStarWithH2());
+                System.out.println("n.getPathCost() " + n.getPathCost());
+                System.out.println("n.heuristic2() " + n.heuristic2());
+                Visualizer.visualizeNode(n);
+                System.out.println("***************************************************");
+            }
+
             //check if n passes goal test
             if(goalTest(n.getState()))
             {
                 compute();
                 System.out.println("Number of expanded Nodes = " + expandedNodes);
 
-                if(visualize)
-                {
-                    Visualizer.visualizePathToGoalTest(n);
-                }
+//                if(visualize)
+//                {
+//                    Visualizer.visualizePathToGoalTest(n);
+//                }
                 if(i==1)
                     System.out.println("AS1 Path cost" + n.getPathCost());
                 if(i==2)
