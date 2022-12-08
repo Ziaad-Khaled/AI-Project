@@ -190,18 +190,46 @@ public class SearchTreeNode {
     //15
     //         [   []  9 6 3[15]     [] [] []      ]
 
-    public int heuristic2()
+    public Pair heuristic2()
     {
-        int capacity=grid.getPassengersMax() - this.getState().getNumberOfPassengersOnCG();
+        //
+        //
+        int capacity = grid.getPassengersMax() - this.getState().getNumberOfPassengersOnCG();
         int heuristicValue;
         Coordinates cgCoordinates = this.getState().getCoastGuardLocation();
+
+
+
+        int blackboxheuristic=0;
+        //System.out.println("only boxes left");
+        HashMap<Coordinates, Integer> BoxesEvaluation =(HashMap<Coordinates, Integer>) this.getState().getblackBoxCountInCoordinates().clone();
+        //Evaluating remaining ticks for each blackbox if we reached it, If the value is negative this means black box cannot be retrieved
+        // 20-(Counter+distance)
+        BoxesEvaluation.replaceAll((boxCoordinate, v)->v=20-(v + cgCoordinates.manhattanDistance(boxCoordinate)));
+
+        for(Coordinates boxCoordinates: BoxesEvaluation.keySet()) {
+            if (BoxesEvaluation.get(boxCoordinates)<=0) {
+                blackboxheuristic++;
+            }
+        }
+
+
+
+        if(getState().getPassengersInCoordinates().size()==0)
+        { return new Pair(0,0); }//a goal node will have h=0
+         else{ //will enter this case if there are no more ships but there exist black boxes
+            int maxValueInMap = (Collections.max(this.getState().getPassengersInCoordinates().values()));
+            //if maximum number of people on a ship equals zero, This means no more people are there and only black boxes left
+            if(maxValueInMap==0)
+            {
+                return new Pair(0,blackboxheuristic);//a goal node will have h=0
+            }
+
+        }
         if(capacity>0){
-            if(getState().getPassengersInCoordinates().size()==0)
-                //no more ships and no more black boxes, no more passengers to drop
-                return 0;//a goal node will have h=0
 
 
-            HashMap<Coordinates, Integer> passengersInCoordinates = this.getState().getPassengersInCoordinates();
+          HashMap<Coordinates, Integer> passengersInCoordinates = this.getState().getPassengersInCoordinates();
 //        HashMap<Coordinates, Integer> ManhattanToCoordinates = (HashMap<Coordinates, Integer>) passengersInCoordinates.clone();
 //        ManhattanToCoordinates.replaceAll( (k,v)->v=k.manhattanDistance(cgCoordinates));
             HashMap<Coordinates, Integer> distancesToRescueShips =(HashMap<Coordinates, Integer>) passengersInCoordinates.clone();
@@ -216,6 +244,7 @@ public class SearchTreeNode {
             // evaluating each ship= number of passengers that can be rescued on the ship - deaths so far to rescue it
             evaluateRescuingShips.replaceAll((shipCoordinate, v)->v=deathsToRescueShip.get(shipCoordinate)-Math.min(v-cgCoordinates.manhattanDistance(shipCoordinate),capacity));
             //finding the ship with the best evaluation
+
 
             Coordinates shipWithBestEvaluation=new Coordinates(0,0);
             double minValue = Double.POSITIVE_INFINITY;
@@ -247,7 +276,7 @@ public class SearchTreeNode {
         }
 
 
-        return heuristicValue;
+        return new Pair(heuristicValue , blackboxheuristic);
 
     }
 
@@ -312,7 +341,7 @@ public class SearchTreeNode {
     }
     public Pair AStarWithH2()
     {
-        return new Pair(getPathCost().deaths + heuristic2(), getPathCost().expiredBlackBoxes);
+        return new Pair(getPathCost().deaths + heuristic2().deaths, getPathCost().expiredBlackBoxes+heuristic2().expiredBlackBoxes);
     }
 
     @Override
@@ -343,6 +372,6 @@ class Pair implements Comparable {
 
     @Override
     public String toString() {
-        return " Deaths: " + deaths + " Expired Black Boxes: " + expiredBlackBoxes ;
+        return " Deaths: " + deaths + " Expired Black Boxessss: " + expiredBlackBoxes ;
     }
 }
