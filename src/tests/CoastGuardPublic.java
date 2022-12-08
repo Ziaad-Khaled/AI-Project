@@ -2,7 +2,6 @@ package tests;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 
@@ -15,7 +14,7 @@ import code.CoastGuard;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 
 public class CoastGuardPublic {
-
+	
 	String grid0 = "5,6;50;0,1;0,4,3,3;1,1,90;";
 	String grid1 = "6,6;52;2,0;2,4,4,0,5,4;2,1,19,4,2,6,5,0,8;";
 	String grid2 = "7,5;40;2,3;3,6;1,1,10,4,5,90;";
@@ -150,18 +149,18 @@ public class CoastGuardPublic {
 	
 	@Test(timeout = 10000)
 	public void testc0() throws Exception {
-		String solution = CoastGuard.solve(grid0, "UC", true);
+		String solution = CoastGuard.solve(grid0, "UC", false);
 		solution = solution.replace(" ", "");
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
-
+	
 	@Test(timeout = 10000)
 	public void testc1() throws Exception {
 		String solution = CoastGuard.solve(grid1, "UC", false);
 		solution = solution.replace(" ", "");
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid1, solution));
 	}
-
+	
 	@Test(timeout = 10000)
 	public void testc2() throws Exception {
 		String solution = CoastGuard.solve(grid2, "UC", false);
@@ -192,7 +191,7 @@ public class CoastGuardPublic {
 	public void testc7() throws Exception {
 		String solution = CoastGuard.solve(grid7, "UC", false);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid7, solution));
-	}
+	}	
 	@Test(timeout = 60000)
 	public void testc8() throws Exception {
 		String solution = CoastGuard.solve(grid8, "UC", false);
@@ -202,7 +201,7 @@ public class CoastGuardPublic {
 	public void testc9() throws Exception {
 		String solution = CoastGuard.solve(grid9, "UC", false);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid9, solution));
-	}
+	}	
 	@Test(timeout = 60000)
 	public void testc10() throws Exception {
 		String solution = CoastGuard.solve(grid10, "UC", false);
@@ -433,14 +432,14 @@ public class CoastGuardPublic {
 
 	@Test(timeout = 10000)
 	public void testh0() throws Exception {
-		String solution = CoastGuard.solve(grid0, "AS2", true);
+		String solution = CoastGuard.solve(grid0, "AS2", false);
 		solution = solution.replace(" ", "");
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid0, solution));
 	}
 	
 	@Test(timeout = 10000)
 	public void testh1() throws Exception {
-		String solution = CoastGuard.solve(grid1, "AS2", true);
+		String solution = CoastGuard.solve(grid1, "AS2", false);
 		solution = solution.replace(" ", "");
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid1, solution));
 	}
@@ -458,17 +457,17 @@ public class CoastGuardPublic {
 
 	@Test(timeout = 60000)
 	public void testh4() throws Exception {
-		String solution = CoastGuard.solve(grid4, "AS2", true);
+		String solution = CoastGuard.solve(grid4, "AS2", false);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid4, solution));
 	}
 	@Test(timeout = 10000)
 	public void testh5() throws Exception {
-		String solution = CoastGuard.solve(grid5, "AS2", true);
+		String solution = CoastGuard.solve(grid5, "AS2", false);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid5, solution));
 	}
 	@Test(timeout = 10000)
 	public void testh6() throws Exception {
-		String solution = CoastGuard.solve(grid6, "AS2", true);
+		String solution = CoastGuard.solve(grid6, "AS2", false);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid6, solution));
 	}
 	@Test(timeout = 10000)
@@ -681,13 +680,12 @@ static class Checker{
 						
 			}
 			if(!linkin) {
-				System.out.println(i);
-				System.out.println(Arrays.toString(actions));
 				System.out.println("action that failed "+actions[i]);
 				return false;
 				}
 	}
-		System.out.println(Arrays.toString(actions));
+		
+	
 		return s.cool() && s.d==blue && s.r==doors;
 	}
 }

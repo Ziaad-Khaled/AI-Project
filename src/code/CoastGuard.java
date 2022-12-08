@@ -72,10 +72,12 @@ public class CoastGuard extends GenericSearchProblem {
 
     public static String solve(String grid, String strategy, Boolean visualize) {
 
-        //create the grid
+        //create the grid object from the string
         Grid gridObject = createGridFromString(grid);
+        //create the initial state object
         State initialState = new State(gridObject.getCoastGuardLocation(),gridObject.getPassengersInCoordinates(),
                 gridObject.getBlackBoxCounterInCoordinates(),0, 0, 0);
+        //the root of the tree has the initial state
         SearchTreeNode root = new SearchTreeNode(null,new ArrayList<>(),new Pair(0,0),initialState, gridObject);
         String solution;
         CoastGuard p = new CoastGuard();
@@ -149,6 +151,7 @@ public class CoastGuard extends GenericSearchProblem {
 
         ArrayList<SearchTreeNode> children = new ArrayList<>();
 
+        //Unique states hashset is passed whenever we do an action to check that the new states are not repeated
         if(canPickUp(parent, grid))
         {
             SearchTreeNode n = pickUp(parent,grid, uniqueStates);
@@ -291,8 +294,10 @@ public class CoastGuard extends GenericSearchProblem {
                 , newState);
         //add this action to the sequence of actions from the root till this node
         childNode.addAction("pickup");
+        //check if the new state has been reached before, if so, do not return it
         if(uniqueStates.contains(newState))
             return null;
+        //else add it to the hashset and return it
         uniqueStates.add(newState);
         return childNode;
     }
@@ -314,8 +319,10 @@ public class CoastGuard extends GenericSearchProblem {
                 new Pair(parent.getPathCost().deaths+deathsAndExpBlackBoxes.deaths, parent.getPathCost().expiredBlackBoxes+deathsAndExpBlackBoxes.expiredBlackBoxes )
                 , newState);        //add this action to the sequence of actions from the root till this node
         childNode.addAction("drop");
+        //check if the new state has been reached before, if so, do not return it
         if(uniqueStates.contains(newState))
             return null;
+        //else add it to the hashset and return it
         uniqueStates.add(newState);
         return childNode;
     }
@@ -344,8 +351,10 @@ public class CoastGuard extends GenericSearchProblem {
                 new Pair(parent.getPathCost().deaths+deathsAndExpBlackBoxes.deaths, parent.getPathCost().expiredBlackBoxes+deathsAndExpBlackBoxes.expiredBlackBoxes )
                 , newState);        //add this action to the sequence of actions from the root till this node        //add this action to the sequence of actions from the root till this node
         childNode.addAction("retrieve");
+        //check if the new state has been reached before, if so, do not return it
         if(uniqueStates.contains(newState))
             return null;
+        //else add it to the hashset and return it
         uniqueStates.add(newState);
         return childNode;
     }
@@ -389,16 +398,19 @@ public class CoastGuard extends GenericSearchProblem {
                 , newState);        //add this action to the sequence of actions from the root till this node        //add this action to the sequence of actions from the root till this node
         //add this action to the sequence of actions from the root till this node
         childNode.addAction(action);
+        //check if the new state has been reached before, if so, do not return it
         if(uniqueStates.contains(newState))
             return null;
+        //else add it to the hashset and return it
         uniqueStates.add(newState);
         return childNode;
     }
 
     @Override
     public boolean goalTest(State s) {
-        //check that there are no coordinates that have any passengers
+        //check that there are no ships that have any passengers
         //check that all blackboxes counter reached 1
+        //check that there are no more passengers on the CG
         if(s.getPassengersInCoordinates().isEmpty() && s.getblackBoxCountInCoordinates().isEmpty() && s.getNumberOfPassengersOnCG()==0)
             return true;
         return false;

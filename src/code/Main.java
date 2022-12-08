@@ -6,6 +6,8 @@ import java.lang.management.ManagementFactory;
 import java.lang.Runtime;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+
+//A class that is here to just test some code in the main method
 public class Main {
 
 
