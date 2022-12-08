@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class State{
-//    private Point2D[] ship;
-//    private int[] passengersNum;
+
 
     //state in the world is specified by the coastGuard location, the number of passengers in each ship, black box counter
-    //in each ship
+    //in each ship, deaths till now, retrieved black boxes till now
+
     private Coordinates coastGuardLocation;
     private HashMap<Coordinates,Integer> passengersInCoordinates;
     private HashMap<Coordinates,Integer> blackBoxCounterInCoordinates;
@@ -84,6 +84,7 @@ public class State{
         return blackBoxCounterInCoordinates;
     }
 
+    //used to perform a time step (reduce passengers, black boxes counters, computing cost) every time agent does an action
     public Pair preformATimeStep(){
 
         int deaths = 0; //number of passengers who died as we are performing the action

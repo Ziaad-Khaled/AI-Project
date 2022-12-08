@@ -9,10 +9,6 @@ import java.util.*;
 
 public abstract class GenericSearchProblem {
 
-    String[] operators;
-    State initialState;
-    SearchTreeNode root;
-    String[] actions;
 
     public abstract  ArrayList<SearchTreeNode> expandNode(SearchTreeNode parent, Grid grid, HashSet<State> uniqueStates);
 
@@ -34,18 +30,11 @@ public abstract class GenericSearchProblem {
         PriorityQueue<SearchTreeNode> nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::getDepth));
         //the less the depth of the node, the higher the priority
         nodes.add(root);
+        //a hash set will be used and passed whenever we expand nodes to check that the new states are not repeated
         HashSet<State> uniqueStates = new HashSet<>();
         uniqueStates.add(root.getState());
         while(true)
         {
-
-
-            //System.out.println("Cpu Usage for the whole system in percent is " + osBean.getProcessCpuTime()/100000);
-            /*if(osBean.getProcessCpuLoad()>maxprocesscpuload)
-            {
-                maxprocesscpuload=osBean.getProcessCpuLoad();
-            }*/
-
             if(nodes.isEmpty())
                 return "failure";
 
@@ -80,12 +69,11 @@ public abstract class GenericSearchProblem {
         PriorityQueue<SearchTreeNode> nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::getDepth).reversed());
         //the higher the depth of the node, the higher the priority
         nodes.add(root);
+        //a hash set will be used and passed whenever we expand nodes to check that the new states are not repeated
         HashSet<State> uniqueStates = new HashSet<>();
         uniqueStates.add(root.getState());
         while(true)
         {
-
-
             if(nodes.isEmpty())
                 return "failure";
 
@@ -118,6 +106,7 @@ public abstract class GenericSearchProblem {
         PriorityQueue<SearchTreeNode> nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::getPathCost));
         //the less the depth of the node, the higher the priority
         nodes.add(root);
+        //a hash set will be used and passed whenever we expand nodes to check that the new states are not repeated
         HashSet<State> uniqueStates = new HashSet<>();
         uniqueStates.add(root.getState());
         while(true)
@@ -126,9 +115,6 @@ public abstract class GenericSearchProblem {
                 return "failure";
 
             SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
-
-
-
             expandedNodes++;
 
             if(visualize)
@@ -166,6 +152,7 @@ public abstract class GenericSearchProblem {
         //the higher the depth of the node, the higher the priority
 
         nodes.add(root);
+        //a hash set will be used and passed whenever we expand nodes to check that the new states are not repeated
         HashSet<State> uniqueStates = new HashSet<>();
         uniqueStates.add(root.getState());
         int maxLevel=0;//iterative deepening search starts with maxLevel=0 assuming that root has level=0
@@ -174,14 +161,13 @@ public abstract class GenericSearchProblem {
 
             if(nodes.isEmpty())//Then we reached the max level
             {
-                maxLevel++; //try higher level
+                maxLevel++; //try higher max level
                 nodes.add(root);//start with queue having only the root again
                 uniqueStates = new HashSet<>();
                 uniqueStates.add(root.getState());
             }
 
             SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
-
 
             //check if n passes goal test
             if(goalTest(n.getState()))
@@ -196,7 +182,7 @@ public abstract class GenericSearchProblem {
                 System.out.println("IDS Path cost" + n.getPathCost());
                 return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
             }
-            if(n.getDepth()<maxLevel)
+            if(n.getDepth()<maxLevel)//check that we did not exceed the max level
             {
                 ArrayList children = expandNode(n,grid, uniqueStates);
                 expandedNodes++;
@@ -218,12 +204,15 @@ public abstract class GenericSearchProblem {
         else if (i==2) {
             nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::heuristic2));
         }
+        else if (i==3) {
+            nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::heuristic3));
+        }
 
 
-        else return "i must be 1 or 2";
-        //the less the depth of the node, the higher the priority
+        else return "i must be 1 or 2 or 3";
 
         nodes.add(root);
+        //a hash set will be used and passed whenever we expand nodes to check that the new states are not repeated
         HashSet<State> uniqueStates = new HashSet<>();
         uniqueStates.add(root.getState());
         while(true)
@@ -260,8 +249,6 @@ public abstract class GenericSearchProblem {
 
     public String solveAStarSearch(Grid grid, Boolean visualize, SearchTreeNode root, int i) {
 
-
-
         int expandedNodes = 0;
 
         PriorityQueue<SearchTreeNode> nodes = null;
@@ -270,16 +257,18 @@ public abstract class GenericSearchProblem {
         else if (i==2) {
             nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::AStarWithH2));
         }
+        else if (i==4) {
+            nodes = new PriorityQueue<>(Comparator.comparing(SearchTreeNode::AStarWithH3));
+        }
         else return "i must be 1 or 2";
         //the less the depth of the node, the higher the priority
 
         nodes.add(root);
+        //a hash set will be used and passed whenever we expand nodes to check that the new states are not repeated
         HashSet<State> uniqueStates = new HashSet<>();
         uniqueStates.add(root.getState());
         while(true)
         {
-
-
             if(nodes.isEmpty())
                 return "failure";
 
@@ -288,10 +277,6 @@ public abstract class GenericSearchProblem {
 
             if(visualize)
             {
-                System.out.println("node number: " + expandedNodes);
-                System.out.println("n.AStarWithH2() " + n.AStarWithH2());
-                System.out.println("n.getPathCost() " + n.getPathCost());
-                System.out.println("n.heuristic2() " + n.heuristic2());
                 Visualizer.visualizeNode(n);
                 System.out.println("***************************************************");
             }
