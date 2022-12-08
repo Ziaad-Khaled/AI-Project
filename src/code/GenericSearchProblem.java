@@ -117,23 +117,17 @@ public abstract class GenericSearchProblem {
             SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
             expandedNodes++;
 
-            if(visualize)
-            {
-                System.out.println("node number: " + expandedNodes);
-                Visualizer.visualizeNode(n);
-            }
-
             //check if n passes goal test
             if(goalTest(n.getState()))
             {
                 //System.out.println("Cpu Usage is " + osBean.getCpuLoad());
                 compute();
                 System.out.println("Number of expanded Nodes = " + expandedNodes);
-//
-//                if(visualize)
-//                {
-//                    Visualizer.visualizePathToGoalTest(n);
-//                }
+
+                if(visualize)
+                {
+                    Visualizer.visualizePathToGoalTest(n);
+                }
                 System.out.println("UC Path cost" + n.getPathCost());
                 return "" + Arrays.toString(n.getActionsSequence().toArray()).replace("[", "").replace("]", "").replace(" ", "") + ";" + n.getState().getDeaths() + ";" + n.getState().getRetrieved() + ";" + expandedNodes;
             }
@@ -275,22 +269,16 @@ public abstract class GenericSearchProblem {
             SearchTreeNode n = (SearchTreeNode) nodes.remove();//dequeue
 
 
-            if(visualize)
-            {
-                Visualizer.visualizeNode(n);
-                System.out.println("***************************************************");
-            }
-
             //check if n passes goal test
             if(goalTest(n.getState()))
             {
                 compute();
                 System.out.println("Number of expanded Nodes = " + expandedNodes);
 
-//                if(visualize)
-//                {
-//                    Visualizer.visualizePathToGoalTest(n);
-//                }
+                if(visualize)
+                {
+                    Visualizer.visualizePathToGoalTest(n);
+                }
                 if(i==1)
                     System.out.println("AS1 Path cost" + n.getPathCost());
                 if(i==2)
